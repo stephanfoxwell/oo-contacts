@@ -42,14 +42,12 @@ const Login = () => {
             type="email"
             name="email"
             autoFocus="true"
-            value=""
           />
           <label htmlFor="password">Password</label>
           <TextField
             id="password"
             type="password"
             name="password"
-            value=""
           />
           <label htmlFor="otp">Two-Factor Verification Code</label>
           <TextField
