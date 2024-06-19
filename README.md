@@ -1,1 +1,1 @@
-# oocontacts
+# oo-contacts
