@@ -43,7 +43,7 @@ handler.get(async (req, res) => {
 
   const urlFilters = filters.map( filter => `filter=${filter}`).join('&');
 
-  const url = `${baseUrl}?sort=name&${urlFields}&${urlFilters}`;
+  const url = `${baseUrl}?sort=name&limit=-1&${urlFields}&${urlFilters}`;
   
   const data = await fetch(url, {
     method: 'GET',

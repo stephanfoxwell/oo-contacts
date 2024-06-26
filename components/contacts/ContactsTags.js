@@ -6,22 +6,51 @@ import TextField from '../ui/TextField'
 import Dialog from '../ui/Dialog'
 import Button, { ButtonText, ButtonPrimary } from '../Button/index'
 import {EyeIcon, EyeClosedIcon, InfoIcon, TagIcon, SyncIcon, LockIcon} from '@primer/octicons-react'
-import randomColor from 'randomcolor'
+import randomColor from 'randomcolor';
+
+import fetchTags from '../../utils/fetchTags'
 
 
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { use } from 'passport'
 
+const ContactsStructuredFilters = () => {
 
-async function fetchTags() { 
-  const url = `/api/tags`
-  const response = await fetch( `${url}` );
+  const [activeList, setActiveList] = useState('tags');
 
-  if ( ! response.ok )
-    throw new Error("Network response was not ok");
-  
-  return response.json()
-}
+  const [listSearchValue, setListSearchValue] = useState('');
+
+  return (
+    <StyledContactsStructuredFilters>
+      <div>
+        <Button variant="small" onClick={() => setActiveList('tags')} active={activeList === 'tags' ? true : undefined}>Tags</Button>
+        <Button variant="small" onClick={() => setActiveList('organizations')} active={activeList === 'organizations' ? true : undefined}>Orgs</Button>
+        <Button variant="small" onClick={() => setActiveList('countries')} active={activeList === 'countries' ? true : undefined}>Countries</Button>
+      </div>
+      {activeList === 'tags' && (
+        <ContactsTags />
+      )}
+      {activeList === 'organizations' && (
+        <ContactsOrganizations />
+      )}
+    </StyledContactsStructuredFilters>
+  )
+
+};
+
+export default ContactsStructuredFilters;
+
+const StyledContactsStructuredFilters = styled.div`
+  position: relative;
+  height: 100%;
+  user-select: none;
+  -webkit-overflow-scrolling: touch;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  display: grid;
+  grid-template: auto 1fr / 1fr;
+`;
 
 function ContactsTags() {
   const { filters, setFilters, setPageIndex, tags, setTags } = useContactsWorkspace();
@@ -164,8 +193,6 @@ function ContactsTags() {
   );
 }
 
-export default ContactsTags
-
 
 const StyledContactTags = styled.aside`
   position: relative;
@@ -305,7 +332,6 @@ function TagItem({ tag, isEditMode, hideActiveBackground }) {
 
   useEffect(() => {
     if ( typeof isActive !== 'undefined' ) {
-      console.log('init toggleActiveTag')
       toggleActiveTag( tag.id, isActive )
       //setPageIndex(1)
     }
@@ -572,7 +598,7 @@ function TagForm( props ) {
       setSavingState('Saving')
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['contacts', 'tags']);
+      queryClient.invalidateQueries(['contacts', 'tags', 'organizations']);
       setSavingState('Saved');
       props.setIsOpen(false)
     },

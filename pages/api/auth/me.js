@@ -32,7 +32,7 @@ handler.get(async (req, res) => {
 
     const data = await response.json();
 
-    console.log("auth/me", data);
+    //console.log("auth/me", data);
 
     res.status(200).json(data.data);
   /*} catch (error) {

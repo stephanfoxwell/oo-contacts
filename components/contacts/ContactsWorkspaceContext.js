@@ -16,24 +16,6 @@ function useContactsWorkspace() {
     setContactsWorkspace({ ...contactsWorkspace, ...update });
   }
 
-  const setInspectorField = ( field ) => {
-    updateContactsWorkspace({ inspectField: field });
-  }
-
-  const setInspectorPage = ( page ) => {
-    updateContactsWorkspace({ inspectPage: page, assessmentPage: page._id, inspectorView: 'page' });
-  }
-
-  const setInspectorToField = ( field, pageId ) => {
-    if ( pageId ) {
-      updateContactsWorkspace({ inspectField: field, assessmentPage: pageId, inspectorView: 'field' });
-    }
-    else {
-      updateContactsWorkspace({ inspectField: field, inspectorView: 'field' });
-    }
-  }
-
-
   const setTags = ( tags ) => {
     updateContactsWorkspace({tags: tags});
   }
@@ -50,6 +32,10 @@ function useContactsWorkspace() {
 
   const setContacts = ( contacts ) => {
     updateContactsWorkspace({ contacts: contacts });
+  }
+
+  const setOrganizations = ( organizations ) => {
+    updateContactsWorkspace({ organizations: organizations });
   }
 
   const setPageIndex = ( index ) => {
@@ -74,6 +60,18 @@ function useContactsWorkspace() {
 
   const isContactRestricted = ( contact ) => {
     return contact?.tags?.some( tag => contactsWorkspace?.tags?.find( t => t.id === tag ).is_restricted );
+  }
+
+  const toggleInspectedContacts = ( contact ) => {
+    const updatedInspectedContacts = contactsWorkspace.inspectedContacts || [];
+    const index = updatedInspectedContacts.findIndex( c => c.id === contact.id );
+    if ( index > -1 ) {
+      updatedInspectedContacts.splice(index, 1);
+    }
+    else {
+      updatedInspectedContacts.push(contact);
+    }
+    updateContactsWorkspace({ inspectedContacts: updatedInspectedContacts });
   }
 
   const fields = [
@@ -196,6 +194,8 @@ function useContactsWorkspace() {
   ];
 
   return {
+    inspectedContacts: contactsWorkspace?.inspectedContacts,
+    toggleInspectedContacts,
     tags: contactsWorkspace?.tags || [],
     setTags,
     selectedTags: contactsWorkspace?.selectedTags || [],
@@ -203,6 +203,8 @@ function useContactsWorkspace() {
     setFilters,
     contacts: contactsWorkspace?.contacts || [],
     setContacts,
+    organizations: contactsWorkspace?.organizations || [],
+    setOrganizations,
     pageIndex: contactsWorkspace?.pageIndex || 1,
     setPageIndex,
     pageStatus: contactsWorkspace?.pageStatus,
@@ -220,7 +222,7 @@ function useContactsWorkspace() {
 }
 
 function ContactsWorkspaceProvider(props) {
-  const [contactsWorkspace, setContactsWorkspace] = React.useState()
+  const [contactsWorkspace, setContactsWorkspace] = React.useState({inspectedContacts: [], filters: { type: 'individual'} })
   const value = React.useMemo(() => [contactsWorkspace, setContactsWorkspace], [contactsWorkspace])
   return <ContactsWorkspaceContext.Provider value={value} {...props} />
 }

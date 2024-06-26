@@ -23,6 +23,11 @@ const ContactDetails = ({ setMode }) => {
   const { inspectedContact } = useContactsWorkspace();
 
   const contact = inspectedContact;
+  
+  const workDetails = [];
+  if ( contact?.position ) workDetails.push(contact.position);
+  if ( contact?.organization?.name) workDetails.push(contact.organization.name);
+
 
   return (
     <StyledContactDetails>
@@ -33,7 +38,7 @@ const ContactDetails = ({ setMode }) => {
         {contact.type === "individual" ? (
           <>
             <h1>{contact.first_name} {contact.last_name}</h1>
-            <h2>{contact.position}, {contact.company}</h2>
+            <h2>{workDetails.join(', ')}</h2>
           </>
         ) : (
           <h1>{contact.name}</h1>

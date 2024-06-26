@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+import { useQuery } from '@tanstack/react-query';
+
 import { useContactsWorkspace, ContactsWorkspaceProvider } from './ContactsWorkspaceContext';
 import { use } from 'passport';
 
@@ -9,6 +11,8 @@ import ContactsInspector from './ContactsInspector';
 import ContactsTags from './ContactsTags';
 
 import Contacts from './Contacts';
+
+import fetchContacts from '../../utils/fetchContacts';
 
 function ContactsWorkspace() {
 
@@ -23,34 +27,29 @@ export default ContactsWorkspace;
 
 function ContactsWorkspaceContent() {
 
-  const { filters, pageIndex, contacts, setContacts, setFilters, setPageIndex, tags, setTags } = useContactsWorkspace();
+  const { filters, pageIndex, contacts, setContacts, setFilters, setPageIndex, tags, setTags, inspectedContact, inspectedContacts, setOrganizations } = useContactsWorkspace();
 
+  useEffect(() => {
+    console.log("inspected contacts", inspectedContacts);
+  }, [inspectedContacts])
+  
   const [loading, setLoading] = useState(false);
 
-  /*
-  const {
-    data,
-    error,
-    isLoading,
-    isSuccess,
-  } = useQuery({
-    queryKey: ['tags'], 
-    queryFn: fetchTags
+  const orgFilters = { type: 'organization', limit: -1, sort_field: 'name' };
+
+  const { isSuccess, isLoading, isError, data, error } = useQuery({
+    queryKey: ['organizations', { orgFilters }],
+    queryFn: () => fetchContacts(orgFilters, 1, -1),
+    keepPreviousData: true,
   });
+  //const {isSuccess: allIsSuccess, data: allData } = useQuery(['contacts', { filters }], () => fetchContacts(filters, 1, 30000))
 
   useEffect(() => {
-    console.log(data);
-    if ( isSuccess )
-      setTags(data.data);
-  }, [data]);*/
-
-  useEffect(() => {
-    console.log(tags)
-  },[tags])
-
-  //const { inspectedContact } = useWorkspace()
-
-  const [inspectedContact, setInspectedContact] = useState(undefined)
+    if ( isSuccess ) {
+      //console.log('organizations', data.data);
+      setOrganizations(data.data)
+    }
+  }, [data])
 
   return (
     <StyledWorkspace className={inspectedContact ? 'has-inspector' : undefined}>

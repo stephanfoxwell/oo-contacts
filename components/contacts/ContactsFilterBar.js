@@ -33,9 +33,15 @@ function ContactsFilterBar() {
     phone: `Phone`,
   };
 
+  const [hasActiveTags, setHasActiveTags] = useState(activeTags.length > 0 ? true : undefined);
+
+  useEffect(() => {
+    setHasActiveTags(activeTags.length > 0 ? true : undefined)
+  }, [activeTags])
+
 
   return (
-    <StyledContactsFilterBar hasActiveTags={activeTags.length > 0 ? true : undefined}>
+    <StyledContactsFilterBar hasActiveTags={hasActiveTags} className={hasActiveTags ? 'is-active' : undefined}>
       <div>
         
       {activeTags?.length > 0 && (
@@ -55,7 +61,7 @@ function ContactsFilterBar() {
          <StyledContactTagsActive>
          {Object.entries(filters).map(( filter ) => {
            return (
-             ! filter[0].match(/tags/i) && ! filter[0].match(/operator/i) && ! filter[0].match(/sort_/) && filter[1]
+             ! filter[0].match(/tags/i) && ! filter[0].match(/operator/i) && ! filter[0].match(/sort_/) && ! filter[0].match(/type/) && filter[1]
              ?
              <>
                 {filter[1].map(( value ) => (
@@ -87,6 +93,10 @@ const StyledContactsFilterBar = styled.div`
   box-shadow: inset 0 0 0.25em -0.125em rgba(0,0,0,0.3);
   width: 100%;
   max-width: 100%;
+  display: none;
+  &.is-active {
+    display: flex;
+  }
   > div {
     white-space: nowrap;
     display: flex;

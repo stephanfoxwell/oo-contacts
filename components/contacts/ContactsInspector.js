@@ -27,18 +27,30 @@ function ContactsInspector() {
     setInspectedContact,
     fields,
     setPageStatus,
-    tags
+    tags,
+    inspectedContacts,
+    toggleInspectedContacts
   } = useContactsWorkspace();
 
   useEffect(() => {
-    console.log(inspectedContact)
+    //console.log(inspectedContact)
   },[inspectedContact]);
 
   const [mode, setMode] = useState('view');
   
+  const [selectedInspectedContact, setSelectedInspectedContact] = useState();
+
+  const currentInspectedContactIndex = inspectedContacts.findIndex((contact) => contact.id === inspectedContact.id);
   
   return (
     <StyledContactInspector>
+      {inspectedContacts.length > 0 && (
+        <StyledContactsInspectorNav>
+          <Button onClick={() => setInspectedContact(inspectedContacts[currentInspectedContactIndex - 1])}>Previous</Button>
+          <Button onClick={() => setInspectedContact(inspectedContacts[currentInspectedContactIndex + 1])}>Next</Button>
+
+        </StyledContactsInspectorNav>
+      )}
       {inspectedContact ? (
         <>
           {mode === 'view' ? (
@@ -55,6 +67,10 @@ function ContactsInspector() {
 }
 
 export default ContactsInspector;
+
+const StyledContactsInspectorNav = styled.div`
+
+`;
 
 
 const StyledContactInspector = styled.div`

@@ -40,7 +40,7 @@ const verifyAndRetrieveToken = async (req, res) => {
     
     res.setHeader('Set-Cookie', [
       `access_token=${new_access_token}; SameSite=Strict; Path=/; Max-Age=840`,
-      `refresh_token=${new_refresh_token}; SameSite=Strict; Path=/; Max-Age=86400`
+      `refresh_token=${new_refresh_token}; SameSite=Strict; Path=/; Max-Age=21600`
     ]);
 
     return new_access_token;

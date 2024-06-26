@@ -38,15 +38,23 @@ handler.get(async (req, res) => {
     'email_1_address',
     'email_2_address',
     'email_3_address',
+    'email_4_address',
+    'email_5_address',
     'email_1_label',
     'email_2_label',
     'email_3_label',
+    'email_4_label',
+    'email_5_label',
     'phone_1_number',
     'phone_2_number',
     'phone_3_number',
+    'phone_4_number',
+    'phone_5_number',
     'phone_1_label',
     'phone_2_label',
     'phone_3_label',
+    'phone_4_label',
+    'phone_5_label',
     'company',
     'location',
     'name',
@@ -71,15 +79,27 @@ handler.get(async (req, res) => {
 
   const filters = [];
 
+  if ( req.query.id ) {
+    if ( req.query.id.includes(",") ) {
+      const ids = req.query.id.split(',');
+      const idFilters = [];
+      ids.forEach( id => idFilters.push(`{"id":{ "_in":"${id}"}}`));
+      filters.push(`{ "_or": [${idFilters.join(',')}] }`);
+    }
+    else {
+      filters.push(`{"id":{ "_eq":"${req.query.id}"}}`);
+    }
+  }
+
   if ( req.query.first_name ) {
     if ( req.query.first_name.includes(",") ) {
       const firstNames = req.query.first_name.split(',');
       const firstNamesFilters = [];
-      firstNames.forEach( name => firstNamesFilters.push(`{"first_name":{ "_icontains":"${name}"}}`));
+      firstNames.forEach( name => firstNamesFilters.push(`{"first_name_normalized":{ "_icontains":"${name}"}}`));
       filters.push(`{ "_or": [${firstNamesFilters.join(',')}] }`);
     }
     else {
-      filters.push(`{"first_name":{ "_icontains":"${req.query.first_name}"}}`);
+      filters.push(`{"first_name_normalized":{ "_icontains":"${req.query.first_name}"}}`);
     }
   }
 
@@ -87,11 +107,23 @@ handler.get(async (req, res) => {
     if ( req.query.last_name.includes(",") ) {
       const lastNames = req.query.last_name.split(',');
       const lastNamesFilters = [];
-      lastNames.forEach( name => lastNamesFilters.push(`{"last_name":{ "_icontains":"${name}"}}`));
+      lastNames.forEach( name => lastNamesFilters.push(`{"last_name_normalized":{ "_icontains":"${name}"}}`));
       filters.push(`{ "_or": [${lastNamesFilters.join(',')}] }`);
     }
     else {
-      filters.push(`{"last_name":{ "_icontains":"${req.query.last_name}"}}`);
+      filters.push(`{"last_name_normalized":{ "_icontains":"${req.query.last_name}"}}`);
+    }
+  }
+
+  if ( req.query.name ) {
+    if ( req.query.name.includes(",") ) {
+      const names = req.query.name.split(',');
+      const nameFilters = [];
+      names.forEach( name => nameFilters.push(`{"name_normalized":{ "_icontains":"${name}"}}`));
+      filters.push(`{ "_or": [${nameFilters.join(',')}] }`);
+    }
+    else {
+      filters.push(`{"name_normalized":{ "_icontains":"${req.query.name}"}}`);
     }
   }
 
@@ -103,12 +135,16 @@ handler.get(async (req, res) => {
         emailFilters.push(`{"email_1_address":{ "_icontains":"${email}"}}`);
         emailFilters.push(`{"email_2_address":{ "_icontains":"${email}"}}`);
         emailFilters.push(`{"email_3_address":{ "_icontains":"${email}"}}`);
+        emailFilters.push(`{"email_4_address":{ "_icontains":"${email}"}}`);
+        emailFilters.push(`{"email_5_address":{ "_icontains":"${email}"}}`);
       });
     }
     else {
       emailFilters.push(`{"email_1_address":{ "_icontains":"${req.query.email}"}}`);
       emailFilters.push(`{"email_2_address":{ "_icontains":"${req.query.email}"}}`);
       emailFilters.push(`{"email_3_address":{ "_icontains":"${req.query.email}"}}`);
+      emailFilters.push(`{"email_4_address":{ "_icontains":"${req.query.email}"}}`);
+      emailFilters.push(`{"email_5_address":{ "_icontains":"${req.query.email}"}}`);
     }
     filters.push(`{ "_or": [${emailFilters.join(',')}] }`);
 
@@ -123,12 +159,16 @@ handler.get(async (req, res) => {
         phoneFilters.push(`{"phone_1_number":{ "_icontains":"${phone}"}}`);
         phoneFilters.push(`{"phone_2_number":{ "_icontains":"${phone}"}}`);
         phoneFilters.push(`{"phone_3_number":{ "_icontains":"${phone}"}}`);
+        phoneFilters.push(`{"phone_4_number":{ "_icontains":"${phone}"}}`);
+        phoneFilters.push(`{"phone_5_number":{ "_icontains":"${phone}"}}`);
       });
     }
     else {
       phoneFilters.push(`{"phone_1_number":{ "_icontains":"${req.query.phone}"}}`);
       phoneFilters.push(`{"phone_2_number":{ "_icontains":"${req.query.phone}"}}`);
       phoneFilters.push(`{"phone_3_number":{ "_icontains":"${req.query.phone}"}}`);
+      phoneFilters.push(`{"phone_4_number":{ "_icontains":"${req.query.phone}"}}`);
+      phoneFilters.push(`{"phone_5_number":{ "_icontains":"${req.query.phone}"}}`);
     }
     filters.push(`{ "_or": [${phoneFilters.join(',')}] }`);
   }
@@ -229,6 +269,15 @@ handler.get(async (req, res) => {
     }
   }
 
+  if ( req.query.type ) {
+    if ( req.query.type.toLowerCase() === 'organization' ) {
+      filters.push(`{"type":{ "_eq":"organization"}}`);
+    }
+    else if ( req.query.type.toLowerCase() === 'individual' ) {
+      filters.push(`{"type":{ "_eq":"individual"}}`);
+    }
+  }
+
   const urlFilters = `filter={ "_and": [ ${filters.map( filter => filter).join(',')} ] }`;
 
   const sortField = req.query.sort_field ? req.query.sort_field : 'last_name';
@@ -270,8 +319,15 @@ handler.post(async (req, res) => {
 
   const payload = req.body;
 
-  const response = await fetch(baseUrl, {
-    method: 'POST',
+  const request_method = req.body.id ? 'PATCH' : 'POST';
+
+  let url = baseUrl;
+  if ( req.body.id ) {
+    url = `${baseUrl}/${req.body.id}`;
+  } 
+
+  const response = await fetch(url, {
+    method: request_method,
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',

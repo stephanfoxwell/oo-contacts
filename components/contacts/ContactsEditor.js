@@ -3,7 +3,7 @@ import styled from "styled-components";
 //import { useQuery, useQueryClient, useMutation } from "react-query";
 import { useContactsWorkspace } from "./ContactsWorkspaceContext";
 
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 import FieldLabel from "../ui/FieldLabel";
 import TextField from "../ui/TextField";
@@ -15,11 +15,8 @@ import ButtonText from "../Button/ButtonText";
 import { EyeIcon, PlusCircleIcon, XIcon, PlusIcon, LinkExternalIcon } from '@primer/octicons-react'
 import Button from "../Button";
 
-
 async function postContact( data ) {
   const formMethod = data && data.id ? 'PATCH' : 'POST';
-
-  console.log("post contact", data);
   
   const response = await fetch('/api/contacts', {
     method: formMethod,
@@ -64,6 +61,7 @@ function ContactsEditor({ setMode }) {
   const {
     inspectedContact,
     setInspectedContact,
+    organizations
   } = useContactsWorkspace()
 
   const queryClient = useQueryClient();
@@ -71,10 +69,15 @@ function ContactsEditor({ setMode }) {
   const [contact, setContact] = useState(inspectedContact || undefined)
 
   const updateContact = ( update ) => {
-    setContact({...contact, ...update})
+    if ( typeof contact === 'undefined') {
+      setContact(update);
+    }
+    else {
+      setContact({...contact, ...update})
+    }
   }
   useEffect(() => {
-    setInspectedContact( contact )
+    //setInspectedContact( contact )
   }, [contact])
   
   useEffect(() => {
@@ -96,8 +99,7 @@ function ContactsEditor({ setMode }) {
     onSuccess: (response) => {
       setSavingState("Saved");
       setTimeout(() => setSavingState("Save"), 2000);
-      console.log('post mutation success');
-      queryClient.invalidateQueries(['contacts', 'tags']);
+      queryClient.invalidateQueries(['contacts', 'tags', 'organizations']);
       //updateContact({ id: response.id})
     },
   });
@@ -142,7 +144,7 @@ function ContactsEditor({ setMode }) {
             <Button onClick={() => setMode('view')}><EyeIcon /> <span>View</span></Button>
             <ButtonPrimary type="button" onClick={() => mutation.mutate(contact)}>{savingState}</ButtonPrimary>
           </StyledContactEditorHeader>
-          <StyledContactEditorForm>
+          <StyledContactEditorForm autoComplete="off">
             <div className="full">
               <FieldLabel htmlFor="form-name">Type</FieldLabel>
               <ChoicesField name="type" options={['individual', 'organization']} currentValue={contact?.type || "individual"} updateContact={updateContact} />
@@ -208,7 +210,7 @@ function ContactsEditor({ setMode }) {
               />
             </div>
 
-            {[1,2,3].map((i) => (
+            {[1,2,3,4,5].map((i) => (
               <>
                 <div className="full">
                   <FieldLabel htmlFor={`form-email_${i}`}>Email {i}</FieldLabel>
@@ -220,7 +222,7 @@ function ContactsEditor({ setMode }) {
                 </div>
               </>
             ))}
-            {[1,2,3].map((i) => (
+            {[1,2,3,4,5].map((i) => (
               <>
                 <div className="full">
                   <FieldLabel htmlFor={`form-phone_${i}`}>Phone {i}</FieldLabel>
@@ -244,27 +246,44 @@ function ContactsEditor({ setMode }) {
                 />
               </div>
             ))}
-            <div className="full">
-              <FieldLabel htmlFor="form-company">Company</FieldLabel>
-              <TextField
-                id="form-company"
-                name="company"
-                type="text"
-                value={contact?.company || ``}
-                onChange={(e) => updateContact({ company: e.currentTarget.value})}
-              />
-            </div>
-
-            <div className="full">
-              <FieldLabel htmlFor="form-position">Position</FieldLabel>
-              <TextField
-                id="form-position"
-                name="position"
-                type="text"
-                value={contact?.position || ``}
-                onChange={(e) => updateContact({ position: e.currentTarget.value})}
-              />
-            </div>
+            {contact?.type === 'individual' && (
+              <>
+                <div className="full">
+                  <FieldLabel htmlFor="form-organization">Organization</FieldLabel>
+                  <select
+                    id="form-organization"
+                    name="organization"
+                    value={contact?.organization?.id || ``}
+                    onChange={(e) => updateContact({ organization: { id: e.currentTarget.value } })}
+                  >
+                    <option value="">Select an organization</option>
+                    {organizations?.map((org) => (
+                      <option key={org.id} value={org.id} selecte={contact?.organization?.id || undefined}>{org.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="full">
+                  <FieldLabel htmlFor="form-company">Company (deprecated)</FieldLabel>
+                  <TextField
+                    id="form-company"
+                    name="company"
+                    type="text"
+                    value={contact?.company || ``}
+                    onChange={(e) => updateContact({ company: e.currentTarget.value})}
+                  />
+                </div>
+                <div className="full">
+                  <FieldLabel htmlFor="form-position">Position</FieldLabel>
+                  <TextField
+                    id="form-position"
+                    name="position"
+                    type="text"
+                    value={contact?.position || ``}
+                    onChange={(e) => updateContact({ position: e.currentTarget.value})}
+                  />
+                </div>
+              </>
+            )}
             <div className="full">
               <FieldLabel htmlFor="form-location">Location</FieldLabel>
               <TextField
@@ -368,7 +387,7 @@ const StyledContactEditor = styled.div`
 `
 
 
-const StyledContactEditorForm = styled.div`
+const StyledContactEditorForm = styled.form`
   position: relative;
   display: grid;
   grid-template: auto / repeat(2, calc(50% - 0.875em));
@@ -485,18 +504,20 @@ function EmailField({ field, updateContact, contact }) {
       <TextField
         id={`form-${field.name}`}
         as={field.type === 'text' ? 'textarea' : 'input'}
-        name={`${field.name}_label`}
-        type="text"
-        value={contact?.[`${field.name}_label`] || ``}
-        onChange={(e) => updateContact({ [`${field.name}_label`]: e.currentTarget.value})}
-      />
-      <TextField
-        id={`form-${field.name}`}
-        as={field.type === 'text' ? 'textarea' : 'input'}
         name={`${field.name}_${nameModifier}`}
         type="text"
         value={contact?.[`${field.name}_${nameModifier}`] || ``}
         onChange={(e) => updateContact({ [`${field.name}_${nameModifier}`]: e.currentTarget.value})}
+        placeholder={field.type === 'email' ? "Email address" : "Phone number"}
+      />
+      <TextField
+        id={`form-${field.name}`}
+        as={field.type === 'text' ? 'textarea' : 'input'}
+        name={`${field.name}_label`}
+        type="text"
+        value={contact?.[`${field.name}_label`] || ``}
+        onChange={(e) => updateContact({ [`${field.name}_label`]: e.currentTarget.value})}
+        placeholder="Label (optional)"
       />
     </StyledFieldWithLabel>
   );
@@ -504,7 +525,7 @@ function EmailField({ field, updateContact, contact }) {
 
 const StyledFieldWithLabel = styled.div`
   display: grid;
-  grid-template: 1fr / 1fr 2.5fr;
+  grid-template: 1fr / 2.5fr 1fr;
   gap: 0.5em;
 `;
 
@@ -512,8 +533,6 @@ function ArrayField({ field, currentValues, updateContact, inlineTags }) {
   const [value, setValue] = useState(``);
 
   const { tags } = useContactsWorkspace();
-
-  console.log("currentValues", currentValues)
 
 
   const [values, setValues] = useState(currentValues || []);
@@ -529,7 +548,6 @@ function ArrayField({ field, currentValues, updateContact, inlineTags }) {
   }
 
   const handleKeyDown = ( e ) => {
-    console.log(e.target.value)
     if ( e.key === 'Enter' ) {
       e.preventDefault()
       addValue( e.target.value )
@@ -543,7 +561,6 @@ function ArrayField({ field, currentValues, updateContact, inlineTags }) {
   
   useEffect(() => {
     if ( values.length ) {
-      console.log("updated values", values)
       updateContact({[field.name]: values})
     }
   }, [values])

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import styled from 'styled-components'
-//import { CSVDownloader } from 'react-papaparse'
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { useCSVDownloader } from 'react-papaparse';
 
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 
@@ -14,27 +14,15 @@ import { DownloadIcon, TrashIcon, VersionsIcon } from '@primer/octicons-react'
 
 import ContactsList from './ContactsList'
 
-//import ContactsImport from './ContactsImport'
+import ContactsImport from './ContactsImport'
 import ContactsSearch from './ContactsSearch'
 import ContactsPagination from './ContactsPagination';
 
 import Dialog from '../ui/Dialog'
 import ContactsFilterBar from './ContactsFilterBar'
+import ContactsExporter from './ContactsExporter';
 
-async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
-  const params = new URLSearchParams(filters).toString()
-  console.log(params)
-  const url = `/api/contacts?${params}`;
-  console.log(url)
-
-  const response = await fetch( `${url}&page=${pageIndex}&limit=${limit}` )
-
-  if ( ! response.ok )
-    throw new Error("Network response was not ok")
-  
-  return response.json()
-}
-
+import fetchContacts from '../../utils/fetchContacts';
 
 export default function Contacts({ inspectedContact, setInspectedContact}) {
   
@@ -103,13 +91,13 @@ export default function Contacts({ inspectedContact, setInspectedContact}) {
 
   return (
     <StyledContacts>
-      <div>
+      <StyledContactFilters>
+        <ContactsFilterBar />
         <ContactsToolbar 
           exportItems={exportItems}
           pageMeta={pageMeta}
         />
-        <ContactsFilterBar />
-      </div>
+      </StyledContactFilters>
       <StyledContactsContent>
         <ContactsList 
           theRecords={theRecords}
@@ -127,6 +115,12 @@ export default function Contacts({ inspectedContact, setInspectedContact}) {
     </StyledContacts>
   )
 }
+
+const StyledContactFilters = styled.div`
+  display: grid;
+  padding: 1em 0;
+  gap: 0.5em;
+`;
 
 const StyledContacts = styled.div`
   position: relative;
@@ -160,64 +154,8 @@ const ContactsToolbar = ({ exportItems, pageMeta }) => {
     <StyledContactsToolbar>
       <ContactsSearch />
       <StyledContactsToolbarActions>
-        
-        <Button  type="button" onClick={() => setIsOpen(true)}> <span>Export</span><DownloadIcon /></Button>
-        {/*<CSVDownloader
-          data={exportItems} 
-          filename={`contact-export`}
-          bom={true}
-        >
-        </CSVDownloader>*/}
-
-        <Dialog isOpen={isOpen} setIsOpen={setIsOpen}>
-          <Dialog.Header>Export contacts</Dialog.Header>
-          <ExportContent setIsOpen={setIsOpen} />
-        </Dialog>
       </StyledContactsToolbarActions>
     </StyledContactsToolbar>
-  )
-}
-
-const ExportContent = ({ setIsOpen }) => {
-  console.log('export content loaded')
-  const [exportRecords, setExportRecords] = useState([])
-  const { filters } = useContactsWorkspace()
-  const {isSuccess, isLoading, data } = useQuery(['contacts', { filters }], () => fetchContacts(filters, 1, 50000))
-  const implodeTags = (tags) => {
-    const filteredTags = []
-    tags.forEach((tag) => {
-      filteredTags.push(tag.name)
-    })
-    return filteredTags.join(', ')
-  }
-
-  const filterExportItems = (items) => {
-    return items.map((item, index) => {
-      return {...item, tags: implodeTags(item.tags), email: (item.email || []).join(', '), phone: (item.phone || []).join(', ') }
-    })
-  }
-
-  useEffect(() => {
-    if ( isSuccess ) {
-      setExportRecords( filterExportItems(data.items) )
-    }
-  }, [data])
-
-  return (
-    <>
-      {isLoading &&
-        <p>Loading export content...</p>
-      }
-      {isSuccess &&
-        <CSVDownloader
-          data={exportRecords} 
-          filename={`contact-export`}
-          bom={true}
-        >
-          <ButtonPrimary  type="button" onClick={() => setIsOpen(false)}>Download</ButtonPrimary>
-        </CSVDownloader>
-      }
-    </>
   )
 }
 
@@ -228,9 +166,6 @@ const StyledContactsToolbar = styled.div`
   top: 0;
   display: flex;
   align-items: center;
-  height: var(--height-titlebar);
-  background-color: var(--color-white);
-  padding-top: 0.25em;
 
   h2 {
     font-size: 1em;
@@ -291,13 +226,10 @@ function ContactsListMeta({ pageMeta, inspectedContact, setInspectedContact }) {
 
   useEffect(() => {
     if ( selectAll ) {
-      console.log(currentRecords.length)
       setSelectedRecords( currentRecords.map((item) => item._id ))
-      console.log('select all')
     }
     else {
       setSelectedRecords([])
-      console.log('select none')
     }
   }, [selectAll])
   /*
@@ -347,25 +279,12 @@ function ContactsListMeta({ pageMeta, inspectedContact, setInspectedContact }) {
   return (
     <StyledContactsListMeta>
       <div>
-        <Checkbox 
-          onClick={() => setSelectAll( ! selectAll )}
-          checked={selectAll ? true : undefined}
-        />
-          <Dropdown>
-            <Button as="summary"><VersionsIcon /></Button>
-            <Dropdown.Menu direction="ne">
-                <Dropdown.Item>
-                  <span onClick={handleDelete}><TrashIcon /><span>Delete selected</span></span>
-                </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        <hr />
-        {/*<ContactsImport />*/}
-        
+        <ContactsImport />
       </div>
       <div>
         <ContactsPagination pageMeta={pageMeta} />
       </div>
+      <ContactsExporter />
     </StyledContactsListMeta>
   )
 }

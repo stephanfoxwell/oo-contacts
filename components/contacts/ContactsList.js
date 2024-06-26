@@ -9,6 +9,7 @@ import Tag from "../ui/Tag";
 import { LockIcon, EyeIcon } from "@primer/octicons-react";
 
 import Button from "../Button/index";
+import RadioInput from "../ui/RadioInput";
 
 
 const ContactsList = ({ theRecords, setPageMeta, inspectedContact, setInspectedContact }) => {
@@ -33,24 +34,54 @@ const ContactsList = ({ theRecords, setPageMeta, inspectedContact, setInspectedC
 
     if ( ! sortField || ! sortDirection ) return;
 
-    console.log("sortField", sortField)
-
     setFilters({ sort_field: sortField, sort_direction: sortDirection })
 
   }, [sortField, sortDirection]);
 
-  const sortFields = [
-    {label: 'Last name', value: 'last_name'},
-    {label: 'First name', value: 'first_name'},
-    {label: 'Date Created', value: 'date_created'},
-    {label: 'Date Updated', value: 'date_updated'},
-  ];
+  const sortFields = {
+    organization: [
+      { label: 'Name', value: 'name' },
+      {label: 'Date Created', value: 'date_created'},
+      {label: 'Date Updated', value: 'date_updated'},
+    ],
+    individual: [
+      {label: 'Last name', value: 'last_name'},
+      {label: 'First name', value: 'first_name'},
+      {label: 'Date Created', value: 'date_created'},
+      {label: 'Date Updated', value: 'date_updated'},
+    ]
+  };
+
+  useEffect(() => {
+    if ( ! filters?.type ) return;
+    if ( filters.type === 'organization' ) {
+      setSortField('name');
+    }
+    else {
+      setSortField('last_name');
+    }
+  }, [filters?.type])
+  
 
   return (
     <StyledContactsList>
       <div>
+        <RadioInput
+          label="People"
+          name="type"
+          value="individual"
+          currentValue={filters?.type || 'individual'}
+          onChange={(e) => setFilters({ type: e.target.value })}
+        />
+        <RadioInput
+          label="Orgs"
+          name="type"
+          value="organization"
+          currentValue={filters?.type || 'individual'}
+          onChange={(e) => setFilters({ type: e.target.value })}
+        />
         <select name="sort_field" value={sortField} onChange={(e) => setSortField(e.target.value) }>
-          {sortFields.map(field => (
+          {sortFields[filters?.type || 'individual'].map(field => (
             <option key={field.value} value={field.value}>{field.label}</option>
           ))}
         </select>
@@ -108,7 +139,7 @@ const StyledContactsListItems = styled.ol`
 
 const ContactsListItem = ({ contact, currentUser }) => {
 
-  const { filters, inspectedContact, setInspectedContact, tags } = useContactsWorkspace();
+  const { filters, inspectedContact, setInspectedContact, tags, inspectedContacts, toggleInspectedContacts } = useContactsWorkspace();
 
 
   const doesContactHaveIsRestrictedTag = (contact) => {
@@ -147,6 +178,7 @@ const ContactsListItem = ({ contact, currentUser }) => {
 
   function handleContactClick() {
     if ( ! isContactRestricted ) {
+      toggleInspectedContacts(contact);
       if ( contact.id === inspectedContact?.id ) {
         setInspectedContact(false)
       }
@@ -159,7 +191,7 @@ const ContactsListItem = ({ contact, currentUser }) => {
 
   const details = []; 
   if ( contact.position ) details.push(contact.position);
-  if ( contact.company ) details.push(contact.company);
+  if ( contact?.organization?.name ) details.push(contact.organization.name);
   if ( contact.location ) details.push(contact.location);
 
 
