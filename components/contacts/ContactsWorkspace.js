@@ -12,7 +12,7 @@ import ContactsTags from './ContactsTags';
 
 import Contacts from './Contacts';
 
-import fetchContacts from '../../utils/fetchContacts';
+import fetchContacts from '../../utils/fetchContactsAlt';
 
 function ContactsWorkspace() {
 
@@ -32,7 +32,7 @@ function ContactsWorkspaceContent() {
   useEffect(() => {
     console.log("inspected contacts", inspectedContacts);
   }, [inspectedContacts])
-  
+
   const [loading, setLoading] = useState(false);
 
   const orgFilters = { type: 'organization', limit: -1, sort_field: 'name' };

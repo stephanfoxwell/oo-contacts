@@ -8,7 +8,7 @@ import Button, { ButtonText, ButtonPrimary } from '../Button/index'
 import {EyeIcon, EyeClosedIcon, InfoIcon, TagIcon, SyncIcon, LockIcon} from '@primer/octicons-react'
 import randomColor from 'randomcolor';
 
-import fetchTags from '../../utils/fetchTags'
+import fetchTags from '../../utils/fetchTagsAlt'
 
 
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";

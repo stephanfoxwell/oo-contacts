@@ -5,7 +5,7 @@ import { useContactsWorkspace } from './ContactsWorkspaceContext'
 import Button, { ButtonPrimary } from '../Button/index';
 import { DownloadIcon } from '@primer/octicons-react';
 import Dialog from '../ui/Dialog'
-import fetchContacts from '../../utils/fetchContacts';
+import fetchContacts from '../../utils/fetchContactsAlt';
 
 const ContactsExporter = () => {
 

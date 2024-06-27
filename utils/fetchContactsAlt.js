@@ -13,8 +13,6 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
     return false;
   }
 
-  console.log(filters)
-
   const fields = [
     'id',
     'first_name',
@@ -65,8 +63,8 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
 
   if ( filters.first_name ) {
     const firstNamesFilters = [];
-    if ( filters.first_name.includes(",") ) {
-      const firstNames = filters.first_name.split(',');
+    if (  Array.isArray(filters.first_name) ) {
+      const firstNames = filters.first_name;
       firstNames.forEach( name => firstNamesFilters.push(`{"first_name":{ "_icontains":"${name}"}}`));
       firstNames.forEach( name => firstNamesFilters.push(`{"first_name_normalized":{ "_icontains":"${name}"}}`));
     }
@@ -79,8 +77,8 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
 
   if ( filters.last_name ) {
     const lastNamesFilters = [];
-    if ( filters.last_name.includes(",") ) {
-      const lastNames = filters.last_name.split(',');
+    if ( Array.isArray( filters.last_name ) ) {
+      const lastNames = filters.last_name;
       lastNames.forEach( name => lastNamesFilters.push(`{"last_name":{ "_icontains":"${name}"}}`));
       lastNames.forEach( name => lastNamesFilters.push(`{"last_name_normalized":{ "_icontains":"${name}"}}`));
     }
@@ -93,8 +91,8 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
 
   if ( filters.name ) {
     const nameFilters = [];
-    if ( filters.name.includes(",") ) {
-      const names = filters.name.split(',');
+    if ( Array.isArray(filters.name) ) {
+      const names = filters.name;
       names.forEach( name => nameFilters.push(`{"name":{ "_icontains":"${name}"}}`));
       names.forEach( name => nameFilters.push(`{"name_normalized":{ "_icontains":"${name}"}}`));
     }
@@ -107,8 +105,8 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
 
   if ( filters.email ) {
     const emailFilters = [];
-    if ( filters.email.includes(",") ) {
-      const emails = filters.email.split(',');
+    if ( Array.isArray(filters.email) ) {
+      const emails = filters.email;
       emails.forEach( email => {
         emailFilters.push(`{"email_1_address":{ "_icontains":"${email}"}}`);
         emailFilters.push(`{"email_2_address":{ "_icontains":"${email}"}}`);
@@ -131,8 +129,8 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
   if ( filters.phone ) {
     const phoneFilters = [];
 
-    if ( filters.phone.includes(",") ) {
-      const phones = filters.phone.split(',');
+    if ( Array.isArray(filters.phone) ) {
+      const phones = filters.phone;
       phones.forEach( phone => {
         phoneFilters.push(`{"phone_1_number":{ "_icontains":"${phone}"}}`);
         phoneFilters.push(`{"phone_2_number":{ "_icontains":"${phone}"}}`);
@@ -152,8 +150,8 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
   }
 
   if ( filters.company ) {
-    if ( filters.company.includes(",") ) {
-      const companies = filters.company.split(',');
+    if ( Array.isArray(filters.company) ) {
+      const companies = filters.company;
       const companyFilters = [];
       companies.forEach( company => companyFilters.push(`{"company":{ "_icontains":"${company}"}}`));
       formattedFilters.push(`{ "_or": [${companyFilters.join(',')}] }`);
@@ -164,8 +162,8 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
   }
 
   if ( filters.location ) {
-    if ( filters.location.includes(",") ) {
-      const locations = filters.location.split(',');
+    if ( Array.isArray(filters.location) ) {
+      const locations = filters.location;
       const locationFilters = [];
       locations.forEach( location => locationFilters.push(`{"location":{ "_icontains":"${location}"}}`));
       formattedFilters.push(`{ "_or": [${locationFilters.join(',')}] }`);
@@ -176,8 +174,8 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
   }
 
   if ( filters.notes ) {
-    if ( filters.notes.includes(",") ) {
-      const notes = filters.notes.split(',');
+    if ( Array.isArray(filters.notes) ) {
+      const notes = filters.notes;
       const notesFilters = [];
       notes.forEach( note => notesFilters.push(`{"notes":{ "_icontains":"${note}"}}`));
       formattedFilters.push(`{ "_or": [${notesFilters.join(',')}] }`);
@@ -188,8 +186,8 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
   }
 
   if ( filters.position ) {
-    if ( filters.position.includes(",") ) {
-      const positions = filters.position.split(',');
+    if ( Array.isArray(filters.position) ) {
+      const positions = filters.position;
       const positionFilters = [];
       positions.forEach( position => positionFilters.push(`{"position":{ "_icontains":"${position}"}}`));
       formattedFilters.push(`{ "_or": [${positionFilters.join(',')}] }`);
@@ -257,7 +255,6 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
       formattedFilters.push(`{"type":{ "_eq":"individual"}}`);
     }
   }
-  console.log('formattedFilters', formattedFilters)
 
   const urlFilters = `filter={ "_and": [ ${formattedFilters.map( filter => filter).join(',')} ] }`;
 
@@ -281,7 +278,7 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
     url = `${baseUrl}${filters.id}`;
   }
 
-  console.log(url);
+  console.log(url)
 
   const data = await fetch(url, {
     method: 'GET',
