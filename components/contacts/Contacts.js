@@ -129,6 +129,7 @@ const StyledContacts = styled.div`
   grid-template: auto 1fr auto / 1fr;
   width: 100%;
   max-width: 100%;
+  height: 100vh;
 `
 
 const StyledContactsContent = styled.div`

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useContactsWorkspace } from "./ContactsWorkspaceContext";
 
 
@@ -62,7 +62,14 @@ const ContactsList = ({ theRecords, setPageMeta, inspectedContact, setInspectedC
     }
   }, [filters?.type])
   
+  const contactListRef = useRef(null);
 
+  useEffect(() => {
+    if ( contactListRef.current ) {
+      // smoothly scroll consactListRef to top
+      contactListRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [filters, sortField, sortDirection, theRecords])
   return (
     <StyledContactsList>
       <div>
@@ -90,7 +97,7 @@ const ContactsList = ({ theRecords, setPageMeta, inspectedContact, setInspectedC
           <option value="desc">Descending</option>
         </select>
       </div>
-      <StyledContactsListItems>
+      <StyledContactsListItems ref={contactListRef}>
         {theRecords.map(contact => (
           <li key={contact.id}>
             <ContactsListItem 
@@ -108,6 +115,7 @@ const ContactsList = ({ theRecords, setPageMeta, inspectedContact, setInspectedC
 export default ContactsList;
 
 const StyledContactsList = styled.div`
+  // TODO: make this overflow, add visible scrollbar
   > div {
     position: sticky;
     top: 0;
@@ -207,13 +215,18 @@ const ContactsListItem = ({ contact, currentUser }) => {
 
   function getTheName() {
     if (contact.type === "organization") {
-      return contact.name;
+      return contact.name || '';
     }
-    else if ( filters?.sort_field === 'first_name' ) {
-      return `${contact.first_name} ${contact.last_name}`;
+    const names = [];
+    if ( filters?.sort_field === 'first_name' ) {
+      if ( contact.first_name ) names.push(contact.first_name);
+      if ( contact.last_name ) names.push(contact.last_name);
+      return names.join(' ');
     }
-  
-    return `${contact.last_name}, ${contact.first_name}`;
+
+    if ( contact.last_name ) names.push(contact.last_name);
+    if ( contact.first_name ) names.push(contact.first_name);
+    return names.join(', ');
   }
 
   return (

@@ -160,6 +160,7 @@ const ContactsImport = () => {
     }
 
     setIsComplete(true);
+    setIsProcessing(false);
 
     queryClient.invalidateQueries(['contacts', 'tags', 'organizations']);
   }
@@ -206,7 +207,7 @@ const ContactsImport = () => {
                     { isComplete && (
                       <div>
                         <span>Import complete</span>
-                        <ButtonPrimary type="button" {...getRemoveFileProps()}>Close</ButtonPrimary>
+                        <ButtonPrimary type="button" {...getRemoveFileProps()} onClick={() => setIsComplete(false)}>Close</ButtonPrimary>
                       </div>
                     )}
                   </div>

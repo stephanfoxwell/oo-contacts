@@ -21,11 +21,11 @@ const ContactsStructuredFilters = () => {
 
   return (
     <StyledContactsStructuredFilters>
-      <div>
+      {/*<div>
         <Button variant="small" onClick={() => setActiveList('tags')} active={activeList === 'tags' ? true : undefined}>Tags</Button>
         <Button variant="small" onClick={() => setActiveList('organizations')} active={activeList === 'organizations' ? true : undefined}>Orgs</Button>
         <Button variant="small" onClick={() => setActiveList('countries')} active={activeList === 'countries' ? true : undefined}>Countries</Button>
-      </div>
+      </div>*/}
       {activeList === 'tags' && (
         <ContactsTags />
       )}
@@ -43,11 +43,6 @@ const StyledContactsStructuredFilters = styled.div`
   position: relative;
   height: 100%;
   user-select: none;
-  -webkit-overflow-scrolling: touch;
-  overflow: auto;
-  &::-webkit-scrollbar {
-    display: none;
-  }
   display: grid;
   grid-template: auto 1fr / 1fr;
 `;
@@ -194,17 +189,12 @@ function ContactsTags() {
 }
 
 
-const StyledContactTags = styled.aside`
+const StyledContactTags = styled.div`
   position: relative;
   border-right: var(--border-divider);
   border-right: 0;
-  height: 100%;
+  height: 100vh;
   user-select: none;
-  -webkit-overflow-scrolling: touch;
-  overflow: auto;
-  &::-webkit-scrollbar {
-    display: none;
-  }
   background-color: var(--color-white);
   display: grid;
   grid-template: ${props => props.hasActiveTags ? 'auto auto 1fr auto / 1fr' : 'auto 1fr auto / 1fr'};
@@ -268,13 +258,32 @@ const StyledContactTagItems = styled.ol`
   height: 100%;
   -webkit-overflow-scrolling: touch;
   overflow: auto;
-  &::-webkit-scrollbar {
-    display: none;
-  }
   &::after {
     content: '';
     display: block;
     height: 0.25em;
+  }
+
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  &::-webkit-scrollbar {
+    width: 0.5em;
+    height: 0.5em;
+  }
+  &::-webkit-scrollbar-track {
+    width: 0.5em;
+    height: 0.5em;
+    background-color: #eee;
+    border: solid #fff;
+    border-width: 0 0.125em;
+  }
+  &::-webkit-scrollbar-thumb {
+    height: 0.5em;
+    width: 0.5em;
+    background: #ccc;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 0.5em;
   }
 `
 

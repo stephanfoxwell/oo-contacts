@@ -92,39 +92,45 @@ handler.get(async (req, res) => {
   }
 
   if ( req.query.first_name ) {
+    const firstNamesFilters = [];
     if ( req.query.first_name.includes(",") ) {
       const firstNames = req.query.first_name.split(',');
-      const firstNamesFilters = [];
+      firstNames.forEach( name => firstNamesFilters.push(`{"first_name":{ "_icontains":"${name}"}}`));
       firstNames.forEach( name => firstNamesFilters.push(`{"first_name_normalized":{ "_icontains":"${name}"}}`));
-      filters.push(`{ "_or": [${firstNamesFilters.join(',')}] }`);
     }
     else {
-      filters.push(`{"first_name_normalized":{ "_icontains":"${req.query.first_name}"}}`);
+      firstNamesFilters.push(`{"first_name":{ "_icontains":"${req.query.first_name}"}}`);
+      firstNamesFilters.push(`{"first_name_normalized":{ "_icontains":"${req.query.first_name}"}}`);
     }
+    filters.push(`{ "_or": [${firstNamesFilters.join(',')}] }`);
   }
 
   if ( req.query.last_name ) {
+    const lastNamesFilters = [];
     if ( req.query.last_name.includes(",") ) {
       const lastNames = req.query.last_name.split(',');
-      const lastNamesFilters = [];
+      lastNames.forEach( name => lastNamesFilters.push(`{"last_name":{ "_icontains":"${name}"}}`));
       lastNames.forEach( name => lastNamesFilters.push(`{"last_name_normalized":{ "_icontains":"${name}"}}`));
-      filters.push(`{ "_or": [${lastNamesFilters.join(',')}] }`);
     }
     else {
-      filters.push(`{"last_name_normalized":{ "_icontains":"${req.query.last_name}"}}`);
+      lastNamesFilters.push(`{"last_name":{ "_icontains":"${req.query.last_name}"}}`);
+      lastNamesFilters.push(`{"last_name_normalized":{ "_icontains":"${req.query.last_name}"}}`);
     }
+    filters.push(`{ "_or": [${lastNamesFilters.join(',')}] }`);
   }
 
   if ( req.query.name ) {
+    const nameFilters = [];
     if ( req.query.name.includes(",") ) {
       const names = req.query.name.split(',');
-      const nameFilters = [];
+      names.forEach( name => nameFilters.push(`{"name":{ "_icontains":"${name}"}}`));
       names.forEach( name => nameFilters.push(`{"name_normalized":{ "_icontains":"${name}"}}`));
-      filters.push(`{ "_or": [${nameFilters.join(',')}] }`);
     }
     else {
-      filters.push(`{"name_normalized":{ "_icontains":"${req.query.name}"}}`);
+      nameFilters.push(`{"name":{ "_icontains":"${req.query.name}"}}`);
+      nameFilters.push(`{"name_normalized":{ "_icontains":"${req.query.name}"}}`);
     }
+    filters.push(`{ "_or": [${nameFilters.join(',')}] }`);
   }
 
   if ( req.query.email ) {
