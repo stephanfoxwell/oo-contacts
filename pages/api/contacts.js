@@ -79,18 +79,6 @@ handler.get(async (req, res) => {
 
   const filters = [];
 
-  if ( req.query.id ) {
-    if ( req.query.id.includes(",") ) {
-      const ids = req.query.id.split(',');
-      const idFilters = [];
-      ids.forEach( id => idFilters.push(`{"id":{ "_in":"${id}"}}`));
-      filters.push(`{ "_or": [${idFilters.join(',')}] }`);
-    }
-    else {
-      filters.push(`{"id":{ "_eq":"${req.query.id}"}}`);
-    }
-  }
-
   if ( req.query.first_name ) {
     const firstNamesFilters = [];
     if ( req.query.first_name.includes(",") ) {
@@ -299,7 +287,13 @@ handler.get(async (req, res) => {
   const urlPage = `page=${requestedPage}`;
   const urlLimit = `limit=${requestedLimit}`;
 
-  const url = `${baseUrl}?${urlFields}&${urlFilters}&${urlSort}&${urlMeta}&${urlPage}&${urlLimit}`;
+  let url = `${baseUrl}?${urlFields}&${urlFilters}&${urlSort}&${urlMeta}&${urlPage}&${urlLimit}`;
+
+
+
+  if ( req.query.id ) {
+    url = `${baseUrl}${req.query.id}`;
+  }
 
   const data = await fetch(url, {
     method: 'GET',

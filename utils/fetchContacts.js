@@ -1,4 +1,5 @@
 async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
+  
   const params = new URLSearchParams(filters).toString();
   const url = `/api/contacts?${params}`;
   console.log(url)

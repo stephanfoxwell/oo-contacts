@@ -22,7 +22,7 @@ import Dialog from '../ui/Dialog'
 import ContactsFilterBar from './ContactsFilterBar'
 import ContactsExporter from './ContactsExporter';
 
-import fetchContacts from '../../utils/fetchContacts';
+import fetchContacts from '../../utils/fetchContactsAlt';
 
 export default function Contacts({ inspectedContact, setInspectedContact}) {
   
