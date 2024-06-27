@@ -200,7 +200,8 @@ const ContactsListItem = ({ contact, currentUser }) => {
   const details = []; 
   if ( contact.position ) details.push(contact.position);
   if ( contact?.organization?.name ) details.push(contact.organization.name);
-  if ( contact.location ) details.push(contact.location);
+  if ( ! contact?.organization?.name && contact.company ) details.push(contact.company);
+  //if ( contact.location ) details.push(contact.location);
 
 
   function getClassName() {
@@ -221,11 +222,17 @@ const ContactsListItem = ({ contact, currentUser }) => {
     if ( filters?.sort_field === 'first_name' ) {
       if ( contact.first_name ) names.push(contact.first_name);
       if ( contact.last_name ) names.push(contact.last_name);
+
+      if ( names.length === 0 ) names.push(contact.email_1_address || contact.phone_1_number || 'No name')
+
       return names.join(' ');
     }
 
     if ( contact.last_name ) names.push(contact.last_name);
     if ( contact.first_name ) names.push(contact.first_name);
+
+    if ( names.length === 0 ) names.push(contact.email_1_address || contact.phone_1_number || 'No name')
+
     return names.join(', ');
   }
 
