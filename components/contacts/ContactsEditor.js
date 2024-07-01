@@ -141,7 +141,7 @@ function ContactsEditor({ setMode }) {
           {/*
           */}
           <StyledContactEditorHeader>
-            <Button onClick={() => setMode('view')}><EyeIcon /> <span>View</span></Button>
+            {/*<Button onClick={() => setMode('view')}><EyeIcon /> <span>View</span></Button>*/}
             <ButtonPrimary type="button" onClick={() => mutation.mutate(contact)}>{savingState}</ButtonPrimary>
           </StyledContactEditorHeader>
           <StyledContactEditorForm autoComplete="off">
@@ -425,13 +425,16 @@ const StyledContactEditorForm = styled.form`
 const StyledContactEditorHeader = styled.div`
   position: sticky;
   top: 0;
-  z-index: 4;
+  display: inline-flex;
+  margin-left: auto;
+  z-index: 10;
+  /*z-index: 4;
   padding: 1em 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: var(--color-off-white);
-  border-bottom: var(--border-divider);
+  border-bottom: var(--border-divider);*/
 `;
 
 function ChoicesField({ name, options, currentValue, updateContact }) {
@@ -576,7 +579,7 @@ function ArrayField({ field, currentValues, updateContact, inlineTags }) {
             <option key={item.id} value={item.id} disabled={item.is_closed ? 'disabled': undefined}>{item.name}</option>
           ))}
         </select>
-        <Button onClick={() => addValue( document.querySelector('select[name="tags-select"]').value )}><PlusCircleIcon /></Button>
+        <Button type="button" onClick={() => addValue( document.querySelector('select[name="tags-select"]').value )}><PlusCircleIcon /></Button>
         {/*<TextField
           name={field.name}
           type={field.format || 'text'}

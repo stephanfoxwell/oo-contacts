@@ -6,10 +6,11 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 import styled from "styled-components";
 import Tag from "../ui/Tag";
-import { LockIcon, EyeIcon } from "@primer/octicons-react";
+import { LockIcon, EyeIcon, ArrowUpIcon, ArrowDownIcon } from "@primer/octicons-react";
 
-import Button from "../Button/index";
+import Button, { ButtonText } from "../Button/index";
 import RadioInput from "../ui/RadioInput";
+import Dropdown from "../ui/Dropdown";
 
 
 const ContactsList = ({ theRecords, setPageMeta, inspectedContact, setInspectedContact }) => {
@@ -18,6 +19,7 @@ const ContactsList = ({ theRecords, setPageMeta, inspectedContact, setInspectedC
 
   const [currentUser, setCurrentUser] = useState(null);
 
+  // TODO: move to context
   useEffect(() => {
     const getCurrentUser = async () => {
       const response = await fetch('/api/auth/me');
@@ -26,41 +28,6 @@ const ContactsList = ({ theRecords, setPageMeta, inspectedContact, setInspectedC
     }
     getCurrentUser();
   }, []);
-
-  const [sortField, setSortField] = useState('last_name');
-  const [sortDirection, setSortDirection] = useState('asc');
-
-  useEffect(() => {
-
-    if ( ! sortField || ! sortDirection ) return;
-
-    setFilters({ sort_field: sortField, sort_direction: sortDirection })
-
-  }, [sortField, sortDirection]);
-
-  const sortFields = {
-    organization: [
-      { label: 'Name', value: 'name' },
-      {label: 'Date Created', value: 'date_created'},
-      {label: 'Date Updated', value: 'date_updated'},
-    ],
-    individual: [
-      {label: 'Last name', value: 'last_name'},
-      {label: 'First name', value: 'first_name'},
-      {label: 'Date Created', value: 'date_created'},
-      {label: 'Date Updated', value: 'date_updated'},
-    ]
-  };
-
-  useEffect(() => {
-    if ( ! filters?.type ) return;
-    if ( filters.type === 'organization' ) {
-      setSortField('name');
-    }
-    else {
-      setSortField('last_name');
-    }
-  }, [filters?.type])
   
   const contactListRef = useRef(null);
 
@@ -69,67 +36,54 @@ const ContactsList = ({ theRecords, setPageMeta, inspectedContact, setInspectedC
       // smoothly scroll consactListRef to top
       contactListRef.current.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [filters, sortField, sortDirection, theRecords])
+  }, [filters, theRecords])
   return (
-    <StyledContactsList>
-      <div>
-        <RadioInput
-          label="People"
-          name="type"
-          value="individual"
-          currentValue={filters?.type || 'individual'}
-          onChange={(e) => setFilters({ type: e.target.value })}
-        />
-        <RadioInput
-          label="Orgs"
-          name="type"
-          value="organization"
-          currentValue={filters?.type || 'individual'}
-          onChange={(e) => setFilters({ type: e.target.value })}
-        />
-        <select name="sort_field" value={sortField} onChange={(e) => setSortField(e.target.value) }>
-          {sortFields[filters?.type || 'individual'].map(field => (
-            <option key={field.value} value={field.value}>{field.label}</option>
-          ))}
-        </select>
-        <select name="sort_direction" value={sortDirection} onChange={(e) => setSortDirection(e.target.value)} >
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
-        </select>
-      </div>
-      <StyledContactsListItems ref={contactListRef}>
-        {theRecords.map(contact => (
-          <li key={contact.id}>
-            <ContactsListItem 
-              contact={contact} 
-              setInspectedContact={setInspectedContact} 
-              currentUser={currentUser}
-            />
-          </li>
-        ))}
-      </StyledContactsListItems>
+    <StyledContactsList ref={contactListRef}>
+      {theRecords?.map(contact => (
+        <li key={contact.id}>
+          <ContactsListItem 
+            contact={contact} 
+            setInspectedContact={setInspectedContact} 
+            currentUser={currentUser}
+          />
+        </li>
+      ))}
     </StyledContactsList>
   );
 };
 
 export default ContactsList;
 
-const StyledContactsList = styled.div`
-  // TODO: make this overflow, add visible scrollbar
-  > div {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    height: 2em;
-    border-bottom: var(--border-divider);
-    background-color: white;
-  }
-`;
 
-const StyledContactsListItems = styled.ol`
+const StyledContactsList = styled.ol`
   list-style: none;
   padding: 0;
+  padding-right: 0.5em;
   margin: 0;
+  height: calc(100vh - (6.0625em + var(--height-titlebar)));
+  
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  &::-webkit-scrollbar {
+    width: 0.375em;
+    height: 0.375em;
+  }
+  &::-webkit-scrollbar-track {
+    width: 0.375em;
+    height: 0.375em;
+    background-color: #eee;
+    border: solid #fff;
+    border-width: 0 0.0625em;
+    border-radius: 0.375em;
+  }
+  &::-webkit-scrollbar-thumb {
+    height: 0.375em;
+    width: 0.375em;
+    background: #ddd;
+    box-shadow: 0 0 0 1px #fff;
+    border-radius: 0.375em;
+  }
   > li {
     position: relative;
     padding: 0.5em 0;
@@ -179,7 +133,6 @@ const ContactsListItem = ({ contact, currentUser }) => {
 
     return isRestricted;
 
-    return contact?.tags?.some( tag => tags?.find( t => t.id === tag.contact_tags_id )?.is_restricted );
   }
 
   const isContactRestricted = doesContactHaveIsRestrictedTag(contact);
@@ -194,7 +147,6 @@ const ContactsListItem = ({ contact, currentUser }) => {
         setInspectedContact(contact)
       }
     }
-    //document.getElementById('notes').scrollTop = 0;
   }
 
   const details = []; 
@@ -251,9 +203,19 @@ const ContactsListItem = ({ contact, currentUser }) => {
           <Tag key={`${contact.id}-${tag.contact_tags_id}`} tagId={tag.contact_tags_id} />
         ))}
       </ul>
-      <span className="action-icon">
+      {filters.sort_field === 'date_created' && (
+        <span className="date">
+          <span>Created:</span> <time>{new Date(contact.date_created).toLocaleDateString()}</time>
+        </span>
+      )}
+      {filters.sort_field === 'date_updated' && (
+        <span className="date">
+          <span>Updated:</span> <time>{new Date(contact.date_updated).toLocaleDateString()}</time>
+        </span>
+      )}
+      {/*<span className="action-icon">
       {! isContactRestricted ? <EyeIcon /> : <LockIcon />}
-      </span>
+      </span>*/}
     </StyledContactsListItem>
   );
 };
@@ -333,6 +295,14 @@ const StyledContactsListItem = styled.div`
     opacity: 0;
     transition: opacity 0.3s ease;
   }
+  .date {
+    font-size: 0.75em;
+    font-weight: 500;
+    span {
+
+    }
+  }
+
   .can-hover &:hover,
   &:active,
   &.is-selected {

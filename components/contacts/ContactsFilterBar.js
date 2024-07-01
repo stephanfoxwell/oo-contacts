@@ -58,6 +58,8 @@ function ContactsFilterBar() {
           )}
         </StyledContactTagsActive>
       )}
+      </div>
+      {/*
          <StyledContactTagsActive>
          {Object.entries(filters).map(( filter ) => {
            return (
@@ -74,7 +76,7 @@ function ContactsFilterBar() {
            )
          })}
        </StyledContactTagsActive>
-       </div>
+       */}
     </StyledContactsFilterBar>
   );
 }
@@ -86,14 +88,17 @@ const StyledContactsFilterBar = styled.div`
   position: relative;
   background-color: var(--color-off-white);
   border-radius: calc(6 * var(--border-radius));
-  height: 3em;
+  height: 2.5em;
   align-items: center;
   display: flex;
   gap: 0.375em;
-  box-shadow: inset 0 0 0.25em -0.125em rgba(0,0,0,0.3);
+  //box-shadow: inset 0 0 0.25em -0.125em rgba(0,0,0,0.3);
   width: 100%;
   max-width: 100%;
-  display: none;
+  display: flex;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
   &.is-active {
     display: flex;
   }
@@ -101,16 +106,6 @@ const StyledContactsFilterBar = styled.div`
     white-space: nowrap;
     display: flex;
     padding: 0.5em;
-    width: 100%;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    //-ms-overflow-style: none;
-    //scrollbar-width: none;
-    scroll-behavior: smooth;
-    //user-select: none;
-    /*&::-webkit-scrollbar {
-      display: none;
-    }*/
   }
 `
 
@@ -320,7 +315,9 @@ const StyledTagItem = styled.li`
   gap: 0.375em;
   padding: 0 0.5em;
   border-radius: calc(4* var(--border-radius));
-  box-shadow: 0 0.0625em 0.25em -0.125em rgba(0,0,0,0.3);
+  //box-shadow: 0 0.0625em 0.25em -0.125em rgba(0,0,0,0.3);
+  border: 1px solid rgba(0,0,0,0.15);
+  font-size: 0.875em;
   &.is-active {
     grid-template: auto / auto 1fr;
   }

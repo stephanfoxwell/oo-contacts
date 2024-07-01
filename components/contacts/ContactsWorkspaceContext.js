@@ -222,7 +222,7 @@ function useContactsWorkspace() {
 }
 
 function ContactsWorkspaceProvider(props) {
-  const [contactsWorkspace, setContactsWorkspace] = React.useState({inspectedContacts: [], filters: { type: 'individual'} })
+  const [contactsWorkspace, setContactsWorkspace] = React.useState({inspectedContacts: [], filters: { type: 'all', includeTagsOperator: 'and'} })
   const value = React.useMemo(() => [contactsWorkspace, setContactsWorkspace], [contactsWorkspace])
   return <ContactsWorkspaceContext.Provider value={value} {...props} />
 }

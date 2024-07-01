@@ -10,11 +10,13 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
 
 
   if (!token) {
-    return false;
+    return [];
   }
 
   const fields = [
     'id',
+    'date_created',
+    'date_updated',
     'first_name',
     'last_name',
     'email_1_address',
@@ -54,12 +56,18 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
     'social_x',
     'social_youtube',
     'tags.contact_tags_id',
-    'type'
+    'type',
+    'user_created.first_name',
+    'user_created.last_name',
+    'user_updated.first_name',
+    'user_updated.last_name',
   ];
 
   const urlFields = fields.map( field => `fields[]=${field}`).join('&');
 
   const formattedFilters = [];
+
+  const keywordFilters = [];
 
   if ( filters.first_name ) {
     const firstNamesFilters = [];
@@ -72,7 +80,7 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
       firstNamesFilters.push(`{"first_name":{ "_icontains":"${filters.first_name}"}}`);
       firstNamesFilters.push(`{"first_name_normalized":{ "_icontains":"${filters.first_name}"}}`);
     }
-    formattedFilters.push(`{ "_or": [${firstNamesFilters.join(',')}] }`);
+    keywordFilters.push(`{ "_or": [${firstNamesFilters.join(',')}] }`);
   }
 
   if ( filters.last_name ) {
@@ -86,7 +94,7 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
       lastNamesFilters.push(`{"last_name":{ "_icontains":"${filters.last_name}"}}`);
       lastNamesFilters.push(`{"last_name_normalized":{ "_icontains":"${filters.last_name}"}}`);
     }
-    formattedFilters.push(`{ "_or": [${lastNamesFilters.join(',')}] }`);
+    keywordFilters.push(`{ "_or": [${lastNamesFilters.join(',')}] }`);
   }
 
   if ( filters.name ) {
@@ -100,7 +108,7 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
       nameFilters.push(`{"name":{ "_icontains":"${filters.name}"}}`);
       nameFilters.push(`{"name_normalized":{ "_icontains":"${filters.name}"}}`);
     }
-    formattedFilters.push(`{ "_or": [${nameFilters.join(',')}] }`);
+    keywordFilters.push(`{ "_or": [${nameFilters.join(',')}] }`);
   }
 
   if ( filters.email ) {
@@ -122,7 +130,7 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
       emailFilters.push(`{"email_4_address":{ "_icontains":"${filters.email}"}}`);
       emailFilters.push(`{"email_5_address":{ "_icontains":"${filters.email}"}}`);
     }
-    formattedFilters.push(`{ "_or": [${emailFilters.join(',')}] }`);
+    keywordFilters.push(`{ "_or": [${emailFilters.join(',')}] }`);
 
   }
   
@@ -146,7 +154,7 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
       phoneFilters.push(`{"phone_4_number":{ "_icontains":"${filters.phone}"}}`);
       phoneFilters.push(`{"phone_5_number":{ "_icontains":"${filters.phone}"}}`);
     }
-    formattedFilters.push(`{ "_or": [${phoneFilters.join(',')}] }`);
+    keywordFilters.push(`{ "_or": [${phoneFilters.join(',')}] }`);
   }
 
   if ( filters.company ) {
@@ -154,10 +162,10 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
       const companies = filters.company;
       const companyFilters = [];
       companies.forEach( company => companyFilters.push(`{"company":{ "_icontains":"${company}"}}`));
-      formattedFilters.push(`{ "_or": [${companyFilters.join(',')}] }`);
+      keywordFilters.push(`{ "_or": [${companyFilters.join(',')}] }`);
     }
     else {
-      formattedFilters.push(`{"company":{ "_icontains":"${filters.company}"}}`);
+      keywordFilters.push(`{"company":{ "_icontains":"${filters.company}"}}`);
     }
   }
 
@@ -166,10 +174,10 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
       const locations = filters.location;
       const locationFilters = [];
       locations.forEach( location => locationFilters.push(`{"location":{ "_icontains":"${location}"}}`));
-      formattedFilters.push(`{ "_or": [${locationFilters.join(',')}] }`);
+      keywordFilters.push(`{ "_or": [${locationFilters.join(',')}] }`);
     }
     else {
-      formattedFilters.push(`{"location":{ "_icontains":"${filters.location}"}}`);
+      keywordFilters.push(`{"location":{ "_icontains":"${filters.location}"}}`);
     }
   }
 
@@ -178,10 +186,10 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
       const notes = filters.notes;
       const notesFilters = [];
       notes.forEach( note => notesFilters.push(`{"notes":{ "_icontains":"${note}"}}`));
-      formattedFilters.push(`{ "_or": [${notesFilters.join(',')}] }`);
+      keywordFilters.push(`{ "_or": [${notesFilters.join(',')}] }`);
     }
     else {
-      formattedFilters.push(`{"notes":{ "_icontains":"${filters.notes}"}}`);
+      keywordFilters.push(`{"notes":{ "_icontains":"${filters.notes}"}}`);
     }
   }
 
@@ -190,29 +198,35 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
       const positions = filters.position;
       const positionFilters = [];
       positions.forEach( position => positionFilters.push(`{"position":{ "_icontains":"${position}"}}`));
-      formattedFilters.push(`{ "_or": [${positionFilters.join(',')}] }`);
+      keywordFilters.push(`{ "_or": [${positionFilters.join(',')}] }`);
     }
     else {
-      formattedFilters.push(`{"position":{ "_icontains":"${filters.position}"}}`);
+      keywordFilters.push(`{"position":{ "_icontains":"${filters.position}"}}`);
     }
   }
 
-  if ( filters.social_x ) {
-    formattedFilters.push(`{"social_x":{ "_icontains":"${filters.social_x}"}}`);
+  if ( filters.keywordsOperator === 'and' ) {
+    formattedFilters.push(`{ "_and": [${keywordFilters.join(',')}] }`);
   }
-
-  if ( filters.social_facebook ) {
-    formattedFilters.push(`{"social_facebook":{ "_icontains":"${filters.social_facebook}"}}`);
+  else {
+    formattedFilters.push(`{ "_or": [${keywordFilters.join(',')}] }`);
   }
+    
 
-  if ( filters.social_instagram ) {
-    formattedFilters.push(`{"social_instagram":{ "_icontains":"${filters.social_instagram}"}}`);
+
+  if ( filters.includeTags && filters.includeTags.length > 0) {
+    const includeTags = filters.includeTags;
+    const tagsFilters = [];
+    if ( filters.includeTagsOperator === "and" ) {
+      includeTags.forEach( tag_id => tagsFilters.push(`{"tag_ids":{"_icontains":"${tag_id}"}}`));
+      formattedFilters.push(`{ "_and": [${tagsFilters.join(',')}] }`);
+    }
+    else {
+      includeTags.forEach( tag_id => tagsFilters.push(`{"tag_ids":{"_icontains":"${tag_id}"}}`));
+      formattedFilters.push(`{ "_or": [${tagsFilters.join(',')}] }`);
+    }
   }
-
-  if ( filters.social_linkedin ) {
-    formattedFilters.push(`{"social_linkedin":{ "_icontains":"${filters.social_linkedin}"}}`);
-  }
-
+  /*
   if ( filters.includeTags && filters.includeTags.length > 0) {
     //const includeTags = filters.includeTags.split(',');
     const includeTags = filters.includeTags;
@@ -229,7 +243,8 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
       //formattedFilters.push(`{ "_and": [${includeTagsFilters.join(',')}] }`);
     }
   }
-
+    */
+ // TODO: examine this logic to match include tags
   if ( filters.excludeTags && filters.excludeTags.length > 0) {
     //const excludeTags = filters.excludeTags.split(',');
     const excludeTags = filters.excludeTags;
@@ -255,6 +270,8 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
       formattedFilters.push(`{"type":{ "_eq":"individual"}}`);
     }
   }
+
+  console.log(formattedFilters)
 
   const urlFilters = `filter={ "_and": [ ${formattedFilters.map( filter => filter).join(',')} ] }`;
 

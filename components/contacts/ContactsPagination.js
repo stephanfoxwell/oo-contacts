@@ -28,11 +28,11 @@ const ContactsPagination = ({ pageMeta }) => {
     return ! isSingle( number ) ? `s` : ``
   }
 
-  const currentRecordsCount = pageMeta && pageMeta.filter_count ? new Intl.NumberFormat().format(pageMeta.filter_count) : 0;
-  const currentPagesCount = pageMeta && pageMeta.filter_count ? new Intl.NumberFormat().format( Math.ceil( pageMeta.filter_count / perPage ) ) : 0;
+  const currentRecordsCount = pageMeta && pageMeta?.filter_count ? new Intl.NumberFormat().format(pageMeta?.filter_count) : 0;
+  const currentPagesCount = pageMeta && pageMeta?.filter_count ? new Intl.NumberFormat().format( Math.ceil( pageMeta?.filter_count / perPage ) ) : 0;
 
-  const hasNextPage = pageMeta.filter_count < pageMeta.page * perPage ? false : true;
-  const hasPreviousPage = pageMeta.page > 1 ? true : false;
+  const hasNextPage = pageMeta?.filter_count < pageMeta?.page * perPage ? false : true;
+  const hasPreviousPage = pageMeta?.page > 1 ? true : false;
 
   return (
     <StyledContactsPagination>

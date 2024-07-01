@@ -23,6 +23,7 @@ const StyledRadioInput = styled.label`
   gap: 0.25em;
   text-transform: capitalize;
   width: auto;
+  margin: 0;
   input {
     display: none;
   }

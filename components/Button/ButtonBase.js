@@ -42,6 +42,14 @@ const ButtonBase = styled.button`
     margin-right: 0.375em;
   }
 
+  &.is-small {
+    font-size: 0.75em;
+    font-weight: 500;
+    padding: 0 0.75em;
+    height: 2em;
+    line-height: 2;
+  }
+
   ${props => props.variant === 'tiny' && (css`
     font-size: 0.75em;
     font-weight: 500;

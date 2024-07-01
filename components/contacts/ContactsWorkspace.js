@@ -76,7 +76,7 @@ const StyledWorkspace = styled.div`
   grid-template: 1fr / 1fr 32em;
   height: 100vh;
   max-width: 100vw;
-  gap: 2em;
+  gap: 1.5em;
   .content {
     position: relative;
     display: grid;
@@ -99,7 +99,7 @@ const StyledWorkspace = styled.div`
     width: 100%;
     position: relative;
     //padding: 1.5em;
-    > div {
+    /*> div {
       position: relative;
       height: 100%;
       //box-shadow: 0 0 0.5em rgba(0,0,0,0.1), 0 0 0.125em 0 rgba(0,0,0,0.1);
@@ -109,6 +109,6 @@ const StyledWorkspace = styled.div`
       -webkit-overflow-scrolling: touch;
       background-color: var(--color-off-white);
       border-left: var(--border-divider);
-    }
+    }*/
   }
 `

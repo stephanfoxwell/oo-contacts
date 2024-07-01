@@ -6,6 +6,7 @@ import { TriangleDownIcon } from '@primer/octicons-react'
 const StyledDetails = styled.details`
   position: relative;
   user-select: none;
+  display: inline-block;
   &[open] {
     z-index: 10;
   }

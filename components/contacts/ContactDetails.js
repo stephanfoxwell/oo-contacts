@@ -27,18 +27,34 @@ const ContactDetails = ({ setMode }) => {
   const workDetails = [];
   if ( contact?.position ) workDetails.push(contact.position);
   if ( contact?.organization?.name) workDetails.push(contact.organization.name);
+  if ( ! contact?.organization?.name && contact.company ) workDetails.push(contact.company);
 
+
+  const hasActiveEmail = [1,2,3,4,5].some((i) => contact[`email_${i}_address`]);
+  const hasActivePhone = [1,2,3,4,5].some((i) => contact[`phone_${i}_number`]);
+  const hasActiveSocials = [`Bluesky`, `Instagram`, `Facebook`, `LinkedIn`, `Mastodon`, `Substack`, `Threads`, `YouTube`, `X`].some((social) => contact[`social_${social.toLowerCase()}`]);
 
   return (
     <StyledContactDetails>
+      {/*
       <StyledContactInspectorToolbar>
         <Button onClick={() => setMode('edit')}><PencilIcon /> <span>Edit</span></Button>
       </StyledContactInspectorToolbar>
+      */}
       <header>
         {contact.type === "individual" ? (
           <>
-            <h1>{contact.first_name} {contact.last_name}</h1>
-            <h2>{workDetails.join(', ')}</h2>
+            <h1><CopyToClipboard>{contact.first_name} {contact.last_name}</CopyToClipboard></h1>
+            <h2>{workDetails.map((detail) => {
+              return (
+                <React.Fragment key={detail}>
+                  <CopyToClipboard>{detail}</CopyToClipboard>
+                  {workDetails.length > 1 && workDetails.indexOf(detail) < workDetails.length - 1 && (
+                    <span>, </span>
+                  )}
+                </React.Fragment>
+              )
+            })}</h2>
           </>
         ) : (
           <h1>{contact.name}</h1>
@@ -52,73 +68,93 @@ const ContactDetails = ({ setMode }) => {
           ))}
         </ul>
       </section>
-      <section>
+      {( hasActiveEmail || hasActivePhone || hasActiveSocials ) && (
+        <section className="contact-points-section">
+            {hasActiveEmail && (
+              <div>
+                <h3>Email</h3>
+                <div className="contact-points">
+                  {[1,2,3,4,5].map((i) => {
+                    return (
+                      <React.Fragment key={`email-${i}`}>
+                        {contact[`email_${i}_address`] && (
+                          <StyledContactPoint>
+                            <CopyToClipboard>{contact[`email_${i}_address`]}</CopyToClipboard>
+                            {contact[`email_${i}_label`] && (
+                              <span>({contact[`email_${i}_label`]})</span>
+                            )}
+                          </StyledContactPoint>
+                        )}
+                      </React.Fragment>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+            {hasActivePhone && (
+              <div>
+                <h3>Phone</h3>
+                <div className="contact-points">
+                  {[1,2,3,4,5].map((i) => {
+                    return (
+                      <React.Fragment key={`phone-${i}`}>
+                        {contact[`phone_${i}_number`] && (
+                          <StyledContactPoint>
+                            <CopyToClipboard>{contact[`phone_${i}_number`]}</CopyToClipboard>
+                            {contact[`phone_${i}_label`] && (
+                              <span>({contact[`phone_${i}_label`]})</span>
+                            )}
+                          </StyledContactPoint>
+                        )}
+                      </React.Fragment>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          {hasActiveSocials && (
+            <div className="socials">
+              <h3>Socials</h3>
+              <div className="socials">
+                {[`Bluesky`, `Instagram`, `Facebook`, `LinkedIn`, `Mastodon`, `Substack`, `Threads`, `YouTube`, `X`].map((social) => {
+                  return (
+                    <React.Fragment key={`social-${social}`}>
+                      {contact[`social_${social.toLowerCase()}`] && (
+                        <StyledExternalLink href={contact[`social_${social.toLowerCase()}`]} title={`View on ${social}`} target="_blank" rel="noopenner noreferrer">
+                          <span>{social}</span>
+                          <i>
+                            <LinkExternalIcon />
+                          </i>
+                        </StyledExternalLink>
+                      )}
+                    </React.Fragment>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+      <section className="notes">
         <ReactMarkdown>{contact.notes}</ReactMarkdown>
       </section>
-      <section className="contact-points-section">
-        <div>
-          <h3>Email</h3>
-          <div className="contact-points">
-            {[1,2,3].map((i) => {
-              return (
-                <React.Fragment key={`email-${i}`}>
-                  {contact[`email_${i}_address`] && (
-                    <StyledContactPoint>
-                      <CopyToClipboard text={contact[`email_${i}_address`]} />
-                      <div>
-                        <a href={`mailto:${contact[`email_${i}_address`]}`}>{contact[`email_${i}_address`]}</a>
-                        {contact[`email_${i}_label`] && (
-                          <span>({contact[`email_${i}_label`]})</span>
-                        )}
-                      </div>
-                    </StyledContactPoint>
-                  )}
-                </React.Fragment>
-              )
-            })}
+      <section className="meta">
+        {contact?.date_updated && (
+          <div className="date-meta">
+            <strong>Updated:</strong> <time>{new Date(contact.date_updated).toLocaleDateString()}</time>
+            {contact?.user_updated?.first_name && (
+              <span> by {contact.user_updated.first_name} {contact.user_updated.last_name}</span>
+            )}
           </div>
-        </div>
-        <div>
-          <h3>Phone</h3>
-          <div className="contact-points">
-            {[1,2,3].map((i) => {
-              return (
-                <React.Fragment key={`phone-${i}`}>
-                  {contact[`phone_${i}_number`] && (
-                    <StyledContactPoint>
-                      <CopyToClipboard text={contact[`phone_${i}_number`]} />
-                      <div>
-                        <a href={`tel:${contact[`phone_${i}_number`]}`}>{contact[`phone_${i}_number`]}</a>
-                        {contact[`phone_${i}_label`] && (
-                          <span>({contact[`phone_${i}_label`]})</span>
-                        )}
-                      </div>
-                    </StyledContactPoint>
-                  )}
-                </React.Fragment>
-              )
-            })}
+        )}
+        {contact?.date_created && (
+          <div className="date-meta">
+            <strong>Created:</strong> <time>{new Date(contact.date_created).toLocaleDateString()}</time>
+            {contact?.user_created?.first_name && (
+              <span> by {contact.user_created.first_name} {contact.user_created.last_name} </span>
+            )}
           </div>
-        </div>
-        <div>
-          <h3>Socials</h3>
-          <div className="socials">
-            {[`Bluesky`, `Instagram`, `Facebook`, `LinkedIn`, `Mastodon`, `Substack`, `Threads`, `YouTube`].map((social) => {
-              return (
-                <React.Fragment key={`social-${social}`}>
-                  {contact[`social_${social.toLowerCase()}`] && (
-                    <StyledExternalLink href={contact[`social_${social.toLowerCase()}`]} title={`View on ${social}`} target="_blank" rel="noopenner noreferrer">
-                      <span>{social}</span>
-                      <i>
-                        <LinkExternalIcon />
-                      </i>
-                    </StyledExternalLink>
-                  )}
-                </React.Fragment>
-              )
-            })}
-          </div>
-        </div>
+        )}
       </section>
     </StyledContactDetails>
   );
@@ -160,24 +196,19 @@ const StyledExternalLink = styled.a`
 
 const StyledContactPoint = styled.div`
   display: grid;
-  grid-template: auto / auto 1fr;
-  gap: 0.5em;
+  gap: 0.25em;
   align-items: start;
-  button {
-    margin-top: 0.375em;
-  }
-  div {
-    display: grid;
-    > span {
-      font-size: 0.75em;
-      font-weight: 600;
-      opacity: 0.7;
-    }
+  > span {
+    font-size: 0.75em;
+    font-weight: 600;
+    opacity: 0.7;
   }
 `;
 
 const StyledContactDetails = styled.div`
-
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   header {
     margin-bottom: 1em;
     h1 {
@@ -220,10 +251,17 @@ const StyledContactDetails = styled.div`
 
   .contact-points-section {
     display: grid;
-    grid-template: auto / 1fr 1fr;
+    grid-template: auto / 1.5fr 1fr;
     gap: 1.5em;
-    > div:last-of-type {
-      grid-column: auto / span 2;
+    place-items: start;
+    h3 {
+      font-size: 0.8125em;
+      font-weight: 700;
+      margin: 0 0 0.5em;
+    }
+    > .socials {
+      grid-column: 2;
+      grid-row: 1 / span 2;
     }
   }
 
@@ -255,6 +293,22 @@ const StyledContactDetails = styled.div`
   .can-hover & a:hover,
   a:active {
     opacity: 1;
+  }
+
+  .notes {
+    font-size: 0.875em;
+  }
+
+  .meta {
+    margin-top: auto;
+    padding-bottom: 1.5em;
+  }
+  .date-meta {
+    font-size: 0.875em;
+    font-style: italic;
+    strong {
+      font-weight: inherit;
+    }
   }
 `;
 

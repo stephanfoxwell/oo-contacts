@@ -367,6 +367,22 @@ handler.patch(async (req, res) => {
   const payload = {
     ...req.body,
   };
+  /*
+  payload.tags.map( tag => {
+    tag.contacts_id = req.body.id;
+    return tag;
+  });
+
+  const tag_ids_as_comma_separated_list = payload.tags.map( tag => tag.contact_tags_id ).join(',');
+  */
+
+  // unset user_created and user_modified
+  delete payload.user_created;
+  delete payload.user_updated;
+  delete payload.date_created;
+  delete payload.date_updated;
+
+  console.log(payload)
 
   const url = `${baseUrl}/${req.body.id}`;
 

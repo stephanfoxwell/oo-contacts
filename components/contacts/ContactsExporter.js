@@ -11,15 +11,43 @@ const ContactsExporter = () => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  return (
-    <>
-      <Button  type="button" onClick={() => setIsOpen(true)}> <span>Export</span><DownloadIcon /></Button>
+  const { filters, tags } = useContactsWorkspace();
 
-      <Dialog isOpen={isOpen} setIsOpen={setIsOpen}>
-        <Dialog.Header>Export contacts</Dialog.Header>
-        <ExportContent setIsOpen={setIsOpen} />
-      </Dialog>
-    </>
+  const tagIsActive = (tag) => {
+    if ( filters?.includeTags?.includes(tag.id) || filters?.excludeTags?.includes(tag.id) ) {
+      return true
+    }
+    return false
+  }
+
+
+  const [hasActiveFilters, setHasActiveFilters] = useState(false);
+
+  const activeTags = tags?.filter(tag => tagIsActive(tag)) || [];
+
+  useEffect(() => {
+    if ( activeTags.length > 0 ) {
+      setHasActiveFilters(true);
+    }
+    else {
+      setHasActiveFilters(false);
+    }
+  }, [activeTags]);
+
+
+  return (
+    <div>
+    {hasActiveFilters && (
+      <>
+        <Button  type="button" onClick={() => setIsOpen(true)}> <span>Export</span><DownloadIcon /></Button>
+
+        <Dialog isOpen={isOpen} setIsOpen={setIsOpen}>
+          <Dialog.Header>Export contacts</Dialog.Header>
+          <ExportContent setIsOpen={setIsOpen} />
+        </Dialog>
+      </>
+    )}
+    </div>
   )
 };
 

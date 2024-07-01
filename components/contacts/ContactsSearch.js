@@ -30,6 +30,7 @@ const ContactsSearch = () => {
     location:  `Location`,
     notes: `Notes`,
     phone: `Phone`,
+    position: `Position`,
   };
 
 
@@ -135,7 +136,10 @@ const ContactsSearch = () => {
 export default ContactsSearch;
 
 const StyledContactsFilters = styled.div`
-
+  display: grid;
+  grid-template: auto / auto 1fr;
+  gap: 1em;
+  width: 100%;
 `;
 
 const StyledContactsSearch = styled.form`
@@ -169,16 +173,15 @@ const StyledContactsSearch = styled.form`
 
 const StyledActiveFilters = styled.div`
   position: relative;
-  max-width: 18em;
   display: flex;
   align-items: center;
   background-color: var(--color-off-white);
-  margin-left: 1em;
   padding: 0.375em 0 0.375em 0.5em;
   border-radius: calc(4 * var(--border-radius));
   > div {
     white-space: nowrap;
     display: flex;
+    padding: 0.375em 0.5em;
     padding: 0 0.5em;
     margin-left: 0.5em;
     width: 100%;
@@ -224,6 +227,7 @@ const StyledFilterItem = styled.div`
   height: auto;
   cursor: pointer;
   padding: 0.125em;
+  border: 1px solid rgba(0,0,0,0.15);
   &:not(:last-of-type) {
     margin-right: 0.5em;
   }

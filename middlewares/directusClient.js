@@ -3,9 +3,9 @@ import { createDirectus, authentication, rest, readItems, readUser, readMe, refr
 
 const directus = createDirectus('https://oo.directus.app').with(authentication()).with(rest({ credentials: 'include' }));
 
-const login = async (email, password) => {
+const login = async (email, password, otp) => {
   try {
-    const response = await directus.login(email, password, { mode: "json" });
+    const response = await directus.login(email, password, { mode: "json", otp: otp });
     return response;
   } catch (error) {
     if (error.code === '2FA_REQUIRED') {

@@ -10,7 +10,8 @@ const StyledOverlay = styled.div`
   bottom: 0;
   left: 0;
   z-index: 999;
-  background-color: rgba(255,255,255,0.25);
+  background-color: rgba(255,255,255,0.5);
+  -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
   display: flex;
   justify-content: center;

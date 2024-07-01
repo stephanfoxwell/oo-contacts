@@ -23,6 +23,7 @@ import ContactsFilterBar from './ContactsFilterBar'
 import ContactsExporter from './ContactsExporter';
 
 import fetchContacts from '../../utils/fetchContactsAlt';
+import ContactsMetaFilters from './ContactsMetaFilters';
 
 export default function Contacts({ inspectedContact, setInspectedContact}) {
   
@@ -92,7 +93,7 @@ export default function Contacts({ inspectedContact, setInspectedContact}) {
   return (
     <StyledContacts>
       <StyledContactFilters>
-        <ContactsFilterBar />
+        {/*<ContactsFilterBar />*/}
         <ContactsToolbar 
           exportItems={exportItems}
           pageMeta={pageMeta}
@@ -118,8 +119,11 @@ export default function Contacts({ inspectedContact, setInspectedContact}) {
 
 const StyledContactFilters = styled.div`
   display: grid;
-  padding: 1em 0;
+  padding: 1em 0 0.5em;
+  margin-right: 1.5em;
   gap: 0.5em;
+  border-bottom: var(--border-divider);
+  height: 6.0625em;
 `;
 
 const StyledContacts = styled.div`
@@ -136,7 +140,8 @@ const StyledContactsContent = styled.div`
   position: relative;
   margin: 0;
   height: 100%;
-  overflow: auto;
+  height: calc(100vh - (6.0625em + var(--height-titlebar)));
+  /*overflow: auto;
   -webkit-overflow-scrolling: touch;
 
   &::-webkit-scrollbar {
@@ -144,6 +149,7 @@ const StyledContactsContent = styled.div`
   }
   scrollbar-width: thin;
   scrollbar-color: var(--color-border) #f7f6f1;
+  */
 
 `
 
@@ -156,6 +162,7 @@ const ContactsToolbar = ({ exportItems, pageMeta }) => {
       <ContactsSearch />
       <StyledContactsToolbarActions>
       </StyledContactsToolbarActions>
+      <ContactsMetaFilters />
     </StyledContactsToolbar>
   )
 }
@@ -166,20 +173,9 @@ const StyledContactsToolbar = styled.div`
   z-index: 101;
   top: 0;
   display: flex;
-  align-items: center;
-
-  h2 {
-    font-size: 1em;
-    margin: 0 1em 0 0;
-    line-height: 1.5;
-  }
-  & > div {
-    display: flex;
-    align-items: center;
-  }
-  > div:last-of-type {
-    margin-left: auto;
-  }
+  flex-direction: column;
+  height: 4.5em;
+  justify-content: space-between;
 `
 
 const StyledContactsToolbarActions = styled.div`
@@ -295,7 +291,7 @@ const StyledContactsListMeta = styled.div`
   align-items: center;
   justify-content: space-between;
   height: var(--height-titlebar);
-  margin: 0 calc(2 * var(--padding-viewport));
+  margin-right: 1.5em;
   &:last-of-type {
     border-top: var(--border-divider);
   }
