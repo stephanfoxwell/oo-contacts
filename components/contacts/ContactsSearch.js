@@ -56,9 +56,11 @@ const ContactsSearch = () => {
   useEffect(() => {
     if ( filters?.type === `organization` ) {
       setFilterLabels(organizationFilterLabels);
+      setFilterKey(`email`);
     }
     else {
       setFilterLabels(individualFilterLabels);
+      setFilterKey(`email`);
     }
   }, [filters?.type]);
 
