@@ -44,5 +44,11 @@ const StyledPermalink = styled.div`
     &.is-copied {
       border-bottom-color: var(--color-primary);
     }
+    .can-hover &:hover,
+    &:active {
+      background-color: var(--color-primary);
+      color: var(--color-white);
+      border-color: transparent;
+    }
   }
 `;

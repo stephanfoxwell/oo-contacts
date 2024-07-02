@@ -114,13 +114,13 @@ function ContactsEditor({ setMode }) {
     onSuccess: (response) => {
       setSavingState("Saved");
       setTimeout(() => setSavingState("Save"), 2000);
+      const newContact = response.data;
+      setInspectedContactId(newContact.id);
       queryClient.invalidateQueries(['contacts', 'tags', 'organizations', 'inspected_contact']);
       console.log("mutate success", response);
-      const newContact = response.data;
       console.log("newContact id", newContact.id);
-      setInspectedContactId(newContact.id);
   
-      fetchData(newContact.id);
+      //fetchData(newContact.id);
       // TODO: FIX VIEW MODE UPDATE
       //setInspectedContact(newContact);
       //setContact(newContact);
@@ -279,20 +279,22 @@ function ContactsEditor({ setMode }) {
               <>
                 <div className="full">
                   <FieldLabel htmlFor="form-organization">Organization</FieldLabel>
-                  <select
-                    id="form-organization"
-                    name="organization"
-                    value={contact?.organization?.id || ``}
-                    onChange={(e) => updateContact({ organization: { id: e.currentTarget.value } })}
-                  >
-                    <option value="">Select an organization</option>
-                    {organizations?.map((org) => (
-                      <option key={org.id} value={org.id} selecte={contact?.organization?.id || undefined}>{org.name}</option>
-                    ))}
-                  </select>
+                  <div className="select">
+                    <select
+                      id="form-organization"
+                      name="organization"
+                      value={contact?.organization?.id || ``}
+                      onChange={(e) => updateContact({ organization: { id: e.currentTarget.value } })}
+                    >
+                      <option value="">Select an organization</option>
+                      {organizations?.map((org) => (
+                        <option key={org.id} value={org.id} selecte={contact?.organization?.id || undefined}>{org.name}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
                 <div className="full">
-                  <FieldLabel htmlFor="form-company">Company (deprecated)</FieldLabel>
+                  <FieldLabel htmlFor="form-company">Company (if no organization)</FieldLabel>
                   <TextField
                     id="form-company"
                     name="company"
@@ -386,13 +388,13 @@ function ContactsEditor({ setMode }) {
                 )}
               </>
             ))*/}
-            {contact &&
+            {/*contact &&
               <div>
                 <ButtonDanger 
                   onClick={(e) => handleDelete(e)}
                 >Delete</ButtonDanger>
               </div>
-            }
+            */}
             {/*lastModifiedBy && 
               <div className="full meta">
                 Last modified by {lastModifiedBy.name}
@@ -412,6 +414,59 @@ const StyledContactEditor = styled.div`
   .has-inspector & {
     display: grid;
     grid-template: auto 1fr / 1fr;
+  }
+  select::-ms-expand {
+  display: none;
+}
+  select {
+  // A reset of styles, including removing the default dropdown arrow
+    appearance: none;
+    // Additional resets for further consistency
+    background-color: transparent;
+    border: none;
+    padding: 0 1em 0 0;
+    margin: 0;
+    width: 100%;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: inherit;
+    line-height: inherit;
+    border: var(--border-width) solid rgba(0,0,0,0.09375);
+    border-radius: var(--border-radius-button);
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.5em 0.8125em;
+    display: inline-block;
+    outline: none;
+    cursor: pointer;
+
+    .can-hover &:hover:not(:focus) {
+    box-shadow: 0 0 0 calc(2* var(--border-width)) var(--color-primary-outline);
+  }
+  &:focus {
+    box-shadow: 0 0 0 var(--border-width) var(--color-primary), 0 0 0 calc(4* var(--border-width)) var(--color-primary-outline);
+    border-color: var(--color-border-dark);
+  }
+  .can-hover &:hover {
+    border-color: var(--color-border-dark);
+  }
+  option {
+    font-family: inherit;
+  }
+  }
+  .select {
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0.9em;
+      right: 0.5em;
+      width: 0.8em;
+      height: 0.5em;
+      background-color: currentColor;
+      clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+    }
   }
 `
 
@@ -597,18 +652,26 @@ function ArrayField({ field, currentValues, updateContact, inlineTags }) {
     }
   }, [values])
 
+  useEffect(() => {
+    console.log(value)
+  }, [value])
+
   return (
     <StyledArrayField
       inlineTags={inlineTags ? true : undefined}
     >
-      <div>
-        <select name="tags-select" onKeyDown={(e) => handleKeyDown(e)} >
-          <option value="">Select a tag</option>
-          {tags?.filter( tag => ! values.find( value => value.contact_tags_id === tag.id ) ).map((item) => (
-            <option key={item.id} value={item.id} disabled={item.is_closed ? 'disabled': undefined}>{item.name}</option>
-          ))}
-        </select>
-        <Button type="button" onClick={() => addValue( document.querySelector('select[name="tags-select"]').value )}><PlusCircleIcon /></Button>
+      <div className="controls">
+        <div className="select">
+          <select name="tags-select" onKeyDown={(e) => handleKeyDown(e)} onChange={(e) => setValue(e.target.value)}>
+            <option value="">Select a tag</option>
+            {tags?.filter( tag => ! values.find( value => value.contact_tags_id === tag.id ) ).map((item) => (
+              <option key={item.id} value={item.id} disabled={item.is_closed ? 'disabled': undefined}>{item.name}</option>
+            ))}
+          </select>
+        </div>
+        {value && value !== '' && (
+          <ButtonPrimary type="button" onClick={() => addValue( document.querySelector('select[name="tags-select"]').value )}>Add Tag</ButtonPrimary>
+        )}
         {/*<TextField
           name={field.name}
           type={field.format || 'text'}
@@ -641,16 +704,9 @@ const StyledArrayField = styled.div`
   > div {
     position: relative;
   }
-  > div > button {
-    position: absolute;
-    top: 0.8375em;
-    right: 0.8375em;
-    opacity: 0.5;
-    transition: opacity 0.2s ease;
-  }
-  .can-hover & > div > button:hover,
-  > div > button:active {
-    opacity: 1;
+  .controls {
+    display: flex;
+    gap: 0.5em;
   }
   ul {
     position: relative;

@@ -15,7 +15,7 @@ import Dropdown from "../ui/Dropdown";
 
 const ContactsList = ({ theRecords, setPageMeta, inspectedContact, setInspectedContact }) => {
   
-  const { filters, setFilters } = useContactsWorkspace();
+  const { filters, setFilters, inspectedContactId } = useContactsWorkspace();
 
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -32,6 +32,7 @@ const ContactsList = ({ theRecords, setPageMeta, inspectedContact, setInspectedC
   const contactListRef = useRef(null);
 
   useEffect(() => {
+    // TODO: prevent scrolling when saving a contact
     if ( contactListRef.current ) {
       // smoothly scroll consactListRef to top
       contactListRef.current.scrollTo({ top: 0, behavior: 'smooth' });

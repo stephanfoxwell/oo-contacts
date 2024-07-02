@@ -49,7 +49,7 @@ const ContactDetails = ({ setMode }) => {
       <header>
         {contact.type === "individual" ? (
           <>
-            <h1><CopyToClipboard>{contact.first_name} {contact.last_name}</CopyToClipboard></h1>
+            <h1><CopyToClipboard>{`${contact.first_name} ${contact.last_name}`}</CopyToClipboard></h1>
             <h2>{workDetails.map((detail) => {
               return (
                 <React.Fragment key={detail}>

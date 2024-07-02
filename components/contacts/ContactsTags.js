@@ -5,7 +5,7 @@ import FieldLabel from '../ui/FieldLabel'
 import TextField from '../ui/TextField'
 import Dialog from '../ui/Dialog'
 import Button, { ButtonText, ButtonPrimary } from '../Button/index'
-import {EyeIcon, EyeClosedIcon, InfoIcon, TagIcon, SyncIcon, LockIcon} from '@primer/octicons-react'
+import {EyeIcon, EyeClosedIcon, InfoIcon, TagIcon, SyncIcon, LockIcon, XCircleIcon} from '@primer/octicons-react'
 import randomColor from 'randomcolor';
 
 import fetchTags from '../../utils/fetchTagsAlt'
@@ -171,15 +171,20 @@ function ContactsTags() {
         </StyledContactTagsActive>
 )*/}
       <StyledContactTagsHeader>
-        <TextField 
-          placeholder="Filter tags..."
-          value={tagsSearchValue}
-          onChange={(e) => setTagsSearchValue(e.target.value)}
-          autoComplete="off" 
-          autoCorrect="off" 
-          autoCapitalize="off"
-          spellCheck="false"
-        />
+        <div>
+          <TextField 
+            placeholder="Filter tags..."
+            value={tagsSearchValue}
+            onChange={(e) => setTagsSearchValue(e.target.value)}
+            autoComplete="off" 
+            autoCorrect="off" 
+            autoCapitalize="off"
+            spellCheck="false"
+          />
+          {tagsSearchValue.length > 0 && (
+            <button type="button" onClick={() => setTagsSearchValue('')}><XCircleIcon /></button>
+          )}
+        </div>
       </StyledContactTagsHeader>
       <StyledContactTagItems>
         {searchedTags?.map((tag) => <TagListItem 
@@ -238,6 +243,15 @@ const StyledContactTagsHeader = styled.header`
   border-bottom: var(--border-divider);
   background-color: inherit;
   padding: 1em 0;
+  > div {
+    position: relative;
+    button {
+      position: absolute;
+      top: 0.87em;
+      right: 0.5em;
+      z-index: 1;
+    }
+  }
 `
 
 const StyledContactTagsActive = styled.div`
