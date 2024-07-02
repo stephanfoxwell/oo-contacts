@@ -460,10 +460,11 @@ const StyledContactEditor = styled.div`
     &::after {
       content: "";
       position: absolute;
-      top: 0.9em;
-      right: 0.5em;
-      width: 0.8em;
-      height: 0.5em;
+      top: 50%;
+      transform: translate3d(0,calc(-50% + 0.1em),0);
+      right: 0.75em;
+      width: 0.7em;
+      height: 0.375em;
       background-color: currentColor;
       clip-path: polygon(100% 0%, 0 0%, 50% 100%);
     }

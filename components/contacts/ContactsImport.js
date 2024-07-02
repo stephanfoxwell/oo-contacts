@@ -216,7 +216,7 @@ const ContactsImport = () => {
             </>
           )}
         </CSVReader>
-        &nbsp;&nbsp;
+        {/*&nbsp;&nbsp;
         <Dropdown>
             <Button as="summary"><KebabHorizontalIcon /></Button>
             <Dropdown.Menu direction="ne">
@@ -228,10 +228,10 @@ const ContactsImport = () => {
                   filename={`contact-import-template.csv`}
                 >
                   <FileIcon /><span>Template .csv</span>
-                </CSVLink>*/}
+                </CSVLink>*
               </Dropdown.Item>
             </Dropdown.Menu>
-          </Dropdown>
+          </Dropdown>*/}
         </StyledContactsImporter>
     )
 
