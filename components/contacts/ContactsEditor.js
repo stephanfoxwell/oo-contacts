@@ -223,7 +223,7 @@ function ContactsEditor({ setMode }) {
                 name="notes"
                 type="text"
                 value={contact?.notes || ``}
-                rows="5"
+                rows="10"
                 onChange={(e) => updateContact({ notes: e.currentTarget.value})}
               />
               <p className="meta">Add links like so: [link text](http://example.com)</p>
@@ -263,15 +263,15 @@ function ContactsEditor({ setMode }) {
                 </div>
               </>
             ))}
-            {['bluesky', 'facebook', 'instagram', 'linkedin', 'mastodon', 'substack', 'threads', 'x', 'youtube' ].map((social) => (
+            {['Bluesky', 'Facebook', 'Instagram', 'LinkedIn', 'Mastodon', 'Substack', 'Threads', 'X', 'YouTube' ].map((social) => (
               <div className="full">
-                <FieldLabel htmlFor={`form-${social}`}>{social}</FieldLabel>
+                <FieldLabel htmlFor={`form-${social.toLowerCase()}`}>{social}</FieldLabel>
                 <TextField
-                  id={`form-${social}`}
-                  name={`social_${social}`}
+                  id={`form-${social.toLowerCase()}`}
+                  name={`social_${social.toLowerCase()}`}
                   type="text"
-                  value={contact?.[`social_${social}`] || ``}
-                  onChange={(e) => updateContact({ [`social_${social}`]: e.currentTarget.value})}
+                  value={contact?.[`social_${social.toLowerCase()}`] || ``}
+                  onChange={(e) => updateContact({ [`social_${social.toLowerCase()}`]: e.currentTarget.value})}
                 />
               </div>
             ))}
