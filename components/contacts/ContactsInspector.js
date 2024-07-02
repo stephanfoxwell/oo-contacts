@@ -85,7 +85,6 @@ function ContactsInspector() {
   return (
     <StyledContactInspector>
         <StyledContactsInspectorNav>
-          <div></div>
       {/*inspectedContacts.length > 0 && (
         <>
           <Button onClick={() => setInspectedContact(inspectedContacts[currentInspectedContactIndex - 1])}>Previous</Button>
@@ -93,12 +92,19 @@ function ContactsInspector() {
         </>
 
       )*/}
+        { (mode === 'view' || ( inspectedContactId && mode === 'edit')) ? (
+          <ButtonPrimary onClick={() => {setInspectedContactId(null); setMode('edit')}}>Create</ButtonPrimary>
+        ) : (
+          <div></div>
+        )}
         {inspectedContactId ? (
             <Button onClick={() => setMode(mode === 'view' ? 'edit' : 'view')}>{mode === 'view' ? 'Edit' : 'View'}</Button>
         ) : (
           <>
             {mode === 'view' ? (
-              <ButtonPrimary onClick={() => setMode('edit')}>Create</ButtonPrimary>
+              <>
+              {/*<ButtonPrimary onClick={() => setMode('edit')}>Create</ButtonPrimary>*/}
+              </>
             ) : (
               <Button onClick={() => setMode('view')}>Cancel</Button>
             )}
