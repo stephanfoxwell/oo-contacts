@@ -22,7 +22,7 @@ const ContactsSearch = () => {
 
   const [hasFilter, setHasFilter] = useState(false);
 
-  const filterLabels = {
+  const individualFilterLabels = {
     company: `Company`,
     email: 'Email',
     first_name: `First name`,
@@ -32,6 +32,35 @@ const ContactsSearch = () => {
     phone: `Phone`,
     position: `Position`,
   };
+
+  const organizationFilterLabels = {
+    email: 'Email',
+    name: `Name`,
+    location:  `Location`,
+    notes: `Notes`,
+    phone: `Phone`,
+  };
+
+
+  const [filterLabels, setFilterLabels] = useState({
+    company: `Company`,
+    email: 'Email',
+    first_name: `First name`,
+    last_name: `Last name`,
+    location:  `Location`,
+    notes: `Notes`,
+    phone: `Phone`,
+    position: `Position`,
+  });
+
+  useEffect(() => {
+    if ( filters?.type === `organization` ) {
+      setFilterLabels(organizationFilterLabels);
+    }
+    else {
+      setFilterLabels(individualFilterLabels);
+    }
+  }, [filters?.type]);
 
 
   function handleAddFilter(e) {

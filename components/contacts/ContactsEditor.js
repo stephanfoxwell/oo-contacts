@@ -263,18 +263,6 @@ function ContactsEditor({ setMode }) {
                 </div>
               </>
             ))}
-            {['Bluesky', 'Facebook', 'Instagram', 'LinkedIn', 'Mastodon', 'Substack', 'Threads', 'X', 'YouTube' ].map((social) => (
-              <div className="full">
-                <FieldLabel htmlFor={`form-${social.toLowerCase()}`}>{social}</FieldLabel>
-                <TextField
-                  id={`form-${social.toLowerCase()}`}
-                  name={`social_${social.toLowerCase()}`}
-                  type="text"
-                  value={contact?.[`social_${social.toLowerCase()}`] || ``}
-                  onChange={(e) => updateContact({ [`social_${social.toLowerCase()}`]: e.currentTarget.value})}
-                />
-              </div>
-            ))}
             {contact?.type === 'individual' && (
               <>
                 <div className="full">
@@ -325,6 +313,19 @@ function ContactsEditor({ setMode }) {
                 onChange={(e) => updateContact({ location: e.currentTarget.value})}
               />
             </div>
+
+            {['Bluesky', 'Facebook', 'Instagram', 'LinkedIn', 'Mastodon', 'Substack', 'Threads', 'X', 'YouTube' ].map((social) => (
+              <div className="full">
+                <FieldLabel htmlFor={`form-${social.toLowerCase()}`}>{social}</FieldLabel>
+                <TextField
+                  id={`form-${social.toLowerCase()}`}
+                  name={`social_${social.toLowerCase()}`}
+                  type="text"
+                  value={contact?.[`social_${social.toLowerCase()}`] || ``}
+                  onChange={(e) => updateContact({ [`social_${social.toLowerCase()}`]: e.currentTarget.value})}
+                />
+              </div>
+            ))}
             {/*fields?.map(( field ) => (
               <>
                 {field.type === 'divider' ? (
