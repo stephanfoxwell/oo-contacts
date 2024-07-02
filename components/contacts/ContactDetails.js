@@ -125,12 +125,12 @@ const ContactDetails = ({ setMode }) => {
                   return (
                     <React.Fragment key={`social-${social}`}>
                       {contact[`social_${social.toLowerCase()}`] && (
-                        <StyledExternalLink href={contact[`social_${social.toLowerCase()}`]} title={`View on ${social}`} target="_blank" rel="noopenner noreferrer">
-                          <span>{social}</span>
-                          <i>
+                        <div className="social-link">
+                          <a href={contact[`social_${social.toLowerCase()}`]} title={`View on ${social}`} target="_blank" rel="noopenner noreferrer">
                             <LinkExternalIcon />
-                          </i>
-                        </StyledExternalLink>
+                          </a>
+                          <CopyToClipboard text={contact[`social_${social.toLowerCase()}`]}>{social}</CopyToClipboard>
+                        </div>
                       )}
                     </React.Fragment>
                   )
@@ -167,23 +167,6 @@ const ContactDetails = ({ setMode }) => {
 
 export default ContactDetails;
 
-const StyledContactInspectorToolbar = styled.div`
-  position: sticky;
-  top: 0;
-  z-index: 4;
-  padding: 1em 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: var(--color-off-white);
-  border-bottom: var(--border-divider);
-`;
-
-const StyledLinkWithCopy = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5em;
-`;
 
 const StyledExternalLink = styled.a`
   display: inline-flex;
@@ -273,12 +256,21 @@ const StyledContactDetails = styled.div`
   .contact-points {
     display: grid;
     gap: 0.5em;
+    > div {
+      font-size: 0.875em;
+    }
   }
 
   .socials {
     display: grid;
     gap: 0.5em;
     grid-template: auto / repeat(auto-fill, minmax(100px, 1fr));
+  }
+
+  .social-link {
+    display: flex;
+    gap: 0.5em;
+    font-size: 0.875em;
   }
 
   p {
@@ -309,7 +301,7 @@ const StyledContactDetails = styled.div`
     padding-bottom: 1.5em;
   }
   .date-meta {
-    font-size: 0.875em;
+    font-size: 0.8125em;
     font-style: italic;
     strong {
       font-weight: inherit;
@@ -318,282 +310,6 @@ const StyledContactDetails = styled.div`
 `;
 
 
-const StyledContactInspectorForm = styled.div`
-  position: relative;
-  display: grid;
-  grid-template: auto / repeat(2, calc(50% - 0.875em));
-  grid-gap: 1em 1.5em;
-  padding: calc(1.5 * var(--padding-viewport)) calc(2 * var(--padding-viewport));
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  > h3 {
-    border-top: var(--border-divider);
-    grid-column: auto / span 2;
-    font-size: 1em;
-    margin: 0.5em 0 0;
-    padding: 0.75em 0 0;
-  }
-  > div {
-    position: relative;
-    grid-column: auto / span 2;
-    &.half {
-      grid-column: auto / span 1;
-    }
-  }
-  .meta {
-    font-size: 0.6875em;
-    font-style: italic;
-  }
-  @media ( max-width: 80em ) {
-    padding: var(--padding-viewport);
-    > div {
-      position: relative;
-      grid-column: auto / span 2;
-      &.half {
-        grid-column: auto / span 2;
-      }
-    }
-  }
-`
-
-const StyledContactInspectorHeader = styled.header`
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background-color: inherit;
-  height: var(--height-titlebar);
-  margin: 0 calc(1.5 * var(--padding-viewport));
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: var(--border-divider);
-  @media ( max-width: 80em ) {
-    margin: 0 var(--padding-viewport);
-  }
-`
-
-function ArrayField({ field, currentValues, updateContact, inlineTags }) {
-  const [value, setValue] = useState(``)
-  const [values, setValues] = useState(currentValues || [])
-
-  const addValue = ( value ) => {
-    if ( value !== `` && ! values.includes(value) ) {
-      setValues([...values, value])
-      setValue('')
-    }
-  }
-  const removeValue = ( needle ) => {
-    setValues( values.filter((item) => item !== needle) )
-  }
-
-  const handleKeyDown = ( e ) => {
-    if ( e.key === 'Enter' ) {
-      e.preventDefault()
-      addValue( value )
-    }
-  }
-
-  useEffect(() => {
-    setValues(currentValues)
-    setValue('')
-  }, [currentValues])
-  
-  useEffect(() => {
-    if ( values.length ) {
-      updateContact({[field.name]: values})
-    }
-  }, [values])
-
-  return (
-    <StyledArrayField
-      inlineTags={inlineTags ? true : undefined}
-    >
-      <ul>
-        {values.map((item) => (
-          <>
-            {(item?.name || ( typeof item === 'string' || item instanceof String)) && (
-              <li 
-                key={`${field.name}_${(item?._id || item)}`} 
-              >
-                <span>{(item?.name || item)}</span>
-                <button onClick={() => removeValue(item)}><XIcon /></button>
-              </li>
-            )}
-          </>
-        ))}
-      </ul>
-      <div>
-        <TextField
-          name={field.name}
-          type={field.format || 'text'}
-          value={value}
-          onChange={(e) => setValue(e.currentTarget.value)}
-          onKeyDown={handleKeyDown}
-          autoComplete="false"
-        />
-        <button type="button" onClick={() => addValue( value )}><PlusCircleIcon /></button>
-      </div>
-    </StyledArrayField>
-  )
-}
-const StyledArrayField = styled.div`
-  position: relative;
-  > div {
-    position: relative;
-  }
-  > div > button {
-    position: absolute;
-    top: 0.8375em;
-    right: 0.8375em;
-    opacity: 0.5;
-    transition: opacity 0.2s ease;
-  }
-  .can-hover & > div > button:hover,
-  > div > button:active {
-    opacity: 1;
-  }
-  ul {
-    position: relative;
-    list-style: none;
-    margin: 0.5em 0 0.5em;
-    padding: 0;
-    li {
-      position: relative;
-      display: grid;
-      grid-template: auto / auto auto;
-      background-color: var(--color-white);
-      border-radius: calc(4 * var(--border-radius));
-      box-shadow: inset 0 0 0 var(--border-width) rgba(0,0,0,0.075);
-      height: auto;
-      align-items: center;
-      margin-bottom: 0.5em;
-      line-height: normal;
-      overflow: hidden;
-      span {
-        display: block;
-        font-size: 0.875em;
-        padding: 0.625em 0.5em 0.625em 0.75em;
-        -webkit-overflow-scrolling: touch;
-        overflow: auto;
-        &::-webkit-scrollbar {
-          display: none;
-        }
-      }
-      button {
-        position:relative;
-        z-index: 1;
-        border-left: var(--border-divider);
-        padding: 0.0625em 0.625em 0 0.375em;
-        box-shadow: -0.375em 0 0.5em 0.25em var(--color-white);
-        .can-hover &:hover,
-        &:active {
-          color: var(--color-caution)
-        }
-      }
-    }
-  }
-
-  .full & ul {
-    display: flex;
-    flex-wrap: wrap;
-  }
-  .full & ul li {
-    margin-right: 0.25em;
-    margin-bottom: 0.25em;
-  }
-`
-
-function SocialField({ field, currentValue, currentFollowerValue, updateContact, contact }) {
-  const [value, setValue] = useState(currentValue || undefined)
-  const [isFollower, setIsFollower] = useState(currentFollowerValue || undefined)
-
-  const handleKeyDown = ( e ) => {
-    if ( e.key === 'Enter' ) {
-      e.preventDefault()
-    }
-  }
-
-  useEffect(() => {
-    setValue(currentValue || undefined)
-  }, [currentValue])
-
-  useEffect(() => {
-    setIsFollower(currentFollowerValue || undefined)
-  }, [currentFollowerValue])
-
-  useEffect(() => {
-    if ( typeof value !== 'undefined' ) {
-      if ( value ) {
-        updateContact({[field.name]: value})
-      }
-      if ( value === '' ) {
-        setIsFollower(false)
-      }
-    }
-  }, [value])
-
-  useEffect(() => {
-    if ( typeof isFollower !== 'undefined' ) {
-      updateContact({[`${field.name}IsFollower`]: isFollower})
-    }
-  }, [isFollower])
-  
-  let link = ''
-  switch ( field.name ) {
-    case 'twitter':
-      link = `https://twitter.com/${value}`
-      break
-    case 'instagram':
-      link = `https://www.instagram.com/${value}`
-      break
-    default:
-      link = value
-  }
-
-
-  return (
-    <StyledSocialField>
-      <TextField
-        name={field.name}
-        type={field.format || 'text'}
-        value={value || ''}
-        onChange={(e) => setValue(e.currentTarget.value)}
-        onKeyDown={handleKeyDown}
-        autoComplete="false"
-      />
-      <Checkbox 
-        checked={isFollower}
-        onClick={() => setIsFollower( ! isFollower )}
-      />
-      {value &&
-        <a href={link} target="_blank"><LinkExternalIcon /></a>
-      }
-    </StyledSocialField>
-  )
-}
-const StyledSocialField = styled.div`
-  position: relative;
-  display: grid;
-  grid-template: 1fr / auto auto;
-  grid-gap: 0.5em;
-  align-items: center;
-  a {
-    position: absolute;
-    z-index: 2;
-    top: 0.3em;
-    right: 2em;
-    opacity: 0.5;
-    transition: opacity 0.2s ease;
-    .can-hover &:hover,
-    &:active {
-      opacity: 1;
-    }
-  }
-`
 
 function InspectorEmpty({ setContact }) {
   return (

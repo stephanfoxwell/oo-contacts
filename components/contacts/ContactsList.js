@@ -63,7 +63,7 @@ const StyledContactsList = styled.ol`
   padding: 0;
   padding-right: 0.5em;
   margin: 0;
-  height: calc(100vh - (6.0625em + var(--height-titlebar)));
+  height: calc(100vh - (6.0625em + var(--height-titlebar) + 2.5em));
   
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -143,7 +143,13 @@ const ContactsListItem = ({ contact, currentUser }) => {
   function handleContactClick() {
     if ( ! isContactRestricted ) {
       toggleInspectedContacts(contact.id);
-      setInspectedContactId(contact.id);
+      if ( inspectedContactId === contact.id ) {
+        setInspectedContactId(false);
+      }
+      else {
+        setInspectedContactId(contact.id);
+      }
+      //setInspectedContactId(contact.id);
       /*if ( contact.id === inspectedContact?.id ) {
         setInspectedContact(false);
       }
@@ -235,6 +241,7 @@ const StyledContactsListItem = styled.div`
   cursor: pointer;
   z-index: 0;
   padding: 0.5em 0.75em;
+  border-radius: calc(4 * var(--border-radius));
   &.is-selected {
     color: var(--color-primary);
   }
@@ -306,7 +313,7 @@ const StyledContactsListItem = styled.div`
 
     }
   }
-
+  /*
   .can-hover &:hover,
   &:active,
   &.is-selected {
@@ -317,12 +324,15 @@ const StyledContactsListItem = styled.div`
       opacity: 1;
     }
   }
+    */
   &.is-selected {
-    &::before {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    /*&::before {
       opacity: 0.7;
     }
     &::after {
       opacity: 0.5;
-    }
+    }*/
   }
 `;

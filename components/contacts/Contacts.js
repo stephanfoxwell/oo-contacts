@@ -133,14 +133,14 @@ const StyledContacts = styled.div`
   grid-template: auto 1fr auto / 1fr;
   width: 100%;
   max-width: 100%;
-  height: 100vh;
+  height: calc(100vh - 2.5em);
 `
 
 const StyledContactsContent = styled.div`
   position: relative;
   margin: 0;
   height: 100%;
-  height: calc(100vh - (6.0625em + var(--height-titlebar)));
+  height: calc(100vh - (6.0625em + var(--height-titlebar) + 2.5em));
   /*overflow: auto;
   -webkit-overflow-scrolling: touch;
 

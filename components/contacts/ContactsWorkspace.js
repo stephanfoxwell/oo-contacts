@@ -13,6 +13,7 @@ import ContactsTags from './ContactsTags';
 import Contacts from './Contacts';
 
 import fetchContacts from '../../utils/fetchContactsAlt';
+import ContactsActiveFilters from './ContactsActiveFilters';
 
 function ContactsWorkspace() {
 
@@ -66,6 +67,9 @@ function ContactsWorkspaceContent() {
           <ContactsInspector />
         </div>
       </div>
+      <div className="active-filters">
+        <ContactsActiveFilters />
+      </div>
     </StyledWorkspace>
   )
 }
@@ -73,14 +77,14 @@ function ContactsWorkspaceContent() {
 const StyledWorkspace = styled.div`
   position: relative;
   display: grid;
-  grid-template: 1fr / 1fr 32em;
+  grid-template: 1fr auto / 1fr 32em;
   height: 100vh;
   max-width: 100vw;
-  gap: 1.5em;
+  gap: 0 1.5em;
   .content {
     position: relative;
     display: grid;
-    height: calc(100vh - 2em);
+    height: calc(100vh - 2em - 3em);
     gap: 1.5em;
     //padding: 1.5em;
     grid-template: 1fr / 14em auto;
@@ -89,13 +93,13 @@ const StyledWorkspace = styled.div`
     .tags,
     .contacts {
       position: relative;
-      height: calc(100vh - 0em);
+      height: calc(100vh - 0em - 2.5em);
       width: 100%;
       max-width: 100%;
     }
   }
   .contact-workspace {
-    height: 100vh;
+    height: calc(100vh - 2.5em);
     width: 100%;
     position: relative;
     //padding: 1.5em;
@@ -110,5 +114,14 @@ const StyledWorkspace = styled.div`
       background-color: var(--color-off-white);
       border-left: var(--border-divider);
     }*/
+  }
+  .active-filters {
+    position: relative;
+    display: flex;
+    height: 2.5em;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    grid-column: 1 / span 2;
+    z-index: 10;
   }
 `

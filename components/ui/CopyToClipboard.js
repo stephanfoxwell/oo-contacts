@@ -2,14 +2,14 @@ import { CheckCircleFillIcon, CheckIcon, CopyIcon } from '@primer/octicons-react
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-const CopyToClipboard = ({ children }) => {
+const CopyToClipboard = ({ children, text = undefined }) => {
   const [copied, setCopied] = useState(false);
 
   const handleClick = async (e) => {
     e.preventDefault();
     try {
       // Using the Clipboard API to copy the text
-      await navigator.clipboard.writeText(children);
+      await navigator.clipboard.writeText(text || children);
       setCopied(true);
       // Automatically hide the notification after 2 seconds
       setTimeout(() => setCopied(false), 2000);
@@ -20,7 +20,7 @@ const CopyToClipboard = ({ children }) => {
 
   return (
     <StyledPermalink>
-      <button className={copied ? 'is-copied': undefined} type="button" title="Copy to clipboard" onClick={(e) => handleClick(e)}>
+      <button className={copied ? 'is-copied': undefined} type="button" title={`Copy: “${text || children}”`} onClick={(e) => handleClick(e)}>
         <span>{children}</span>
       </button>
     </StyledPermalink>

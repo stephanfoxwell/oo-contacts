@@ -37,6 +37,10 @@ const StyledTag = styled.li`
   display: inline-flex;
   gap: 0.25em;
   align-items: center;
+  box-shadow: 0 0 0 1px var(--color-white);
+  span {
+    color: #333;
+  }
   &[data-color] {
     contain: paint;
     &::before {

@@ -190,8 +190,8 @@ function ContactsTags() {
       </StyledContactTagItems>
       <StyledContactTagsFooter>
 
-        <div>
-          Match: 
+        <div className="options">
+          <label>Match:</label>
           <RadioInput 
             label="All"
             name="tags-operator"
@@ -207,7 +207,6 @@ function ContactsTags() {
             onChange={(e) => setFilters({ includeTagsOperator: e.target.value })}
           />
         </div>
-        <Button variant="small" onClick={clearAllTags}>Clear</Button>
         {/*isEditMode ? (
           <ButtonPrimary variant="small" onClick={() => setIsEditMode( ! isEditMode )}>Done</ButtonPrimary>
         ) : (
@@ -224,7 +223,7 @@ const StyledContactTags = styled.div`
   position: relative;
   border-right: var(--border-divider);
   border-right: 0;
-  height: 100vh;
+  height: calc(100vh - 2.5em);
   user-select: none;
   background-color: var(--color-white);
   display: grid;
@@ -323,7 +322,17 @@ const StyledContactTagsFooter = styled.div`
   margin: 0 var(--padding-viewport);
   border-top: var(--border-divider);
   margin-top: auto;
-  padding: 0.5em 0;
+  padding: 1em 0;
+  .options {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    label:first-of-type {
+      font-size: 0.875em;
+      margin: 0;
+      font-weight: 500;
+    }
+  }
   /*div {
     display: flex;
     align-items: center;
@@ -658,10 +667,13 @@ function TagListItem({ tag, isEditMode, hideActiveBackground }) {
             </button>
           )*/}
           <div>
+            <strong onClick={(e) => setIsActive( ! isActive )}>
+              
             {tag.is_restricted && (
               <LockIcon />
             )}
-            <strong onClick={(e) => setIsActive( ! isActive )}>{tag.name}</strong>
+            <span>{tag.name}</span>
+            </strong>
            
             {isActive ? (
             <button type="button" onClick={() => setIsExclude( ! isExclude )}>
@@ -672,7 +684,7 @@ function TagListItem({ tag, isEditMode, hideActiveBackground }) {
               )}
             </button>
             ) : (
-              <span>{tag.contacts_count}</span>
+              <span className="tag-count">{tag.contacts_count}</span>
             )}
           </div>
           {/*<StyledTagActions className={isActive ? 'active' : undefined}>
@@ -723,6 +735,9 @@ const StyledTagListItem = styled.li`
     text-overflow: ellipsis;
     padding: 0.375em 0.5em;
     border-radius: calc(4* var(--border-radius));
+    span:not(:first-child) {
+      margin-left: 0.25em;
+    }
   }
   &.is-active {
     strong {
@@ -737,7 +752,7 @@ const StyledTagListItem = styled.li`
   .can-hover &:hover::before {
     opacity: 1;
   }
-  span {
+  .tag-count {
     display: block;
     font-size: 0.6875em;
     font-weight: 700;

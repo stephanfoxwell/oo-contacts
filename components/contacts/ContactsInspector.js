@@ -93,8 +93,16 @@ function ContactsInspector() {
         </>
 
       )*/}
-        {inspectedContact && (
-          <Button onClick={() => setMode(mode === 'view' ? 'edit' : 'view')}>{mode === 'view' ? 'Edit' : 'View'}</Button>
+        {inspectedContactId ? (
+            <Button onClick={() => setMode(mode === 'view' ? 'edit' : 'view')}>{mode === 'view' ? 'Edit' : 'View'}</Button>
+        ) : (
+          <>
+            {mode === 'view' ? (
+              <ButtonPrimary onClick={() => setMode('edit')}>Create</ButtonPrimary>
+            ) : (
+              <Button onClick={() => setMode('view')}>Cancel</Button>
+            )}
+          </>
         )}
         </StyledContactsInspectorNav>
       <StyledContactInspectorCard>
@@ -102,7 +110,15 @@ function ContactsInspector() {
           {inspectedContact ? (
             <>
               {mode === 'view' ? (
-                <ContactDetails setMode={setMode} />
+                <>
+                  {inspectedContactId ? (
+                    <ContactDetails setMode={setMode} />
+                  ) : (
+                    <div className="empty">
+                      <span>Select a contact to view...</span>
+                    </div>
+                  )}
+                </>
               ) : (
                 <ContactsEditor setMode={setMode} />
               )}
@@ -131,6 +147,16 @@ const StyledContactInspectorCard = styled.div`
   border-radius: calc( 8 * var(--border-radius) );
   height: 100%;
   border: var(--border-divider);
+
+  .empty {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    display: grid;
+    place-items: center;
+    font-style: italic;
+    font-size: 0.875em;
+  }
   > div {
     position: absolute;
     top: 0;
@@ -165,7 +191,7 @@ const StyledContactInspectorCard = styled.div`
 
 const StyledContactInspector = styled.div`
   position: relative;
-  height: 100vh;
+  height: calc(100vh - 2.5em);
   padding: 1em 1.5em 1.5em;
   background-color: var(--color-off-white);
   display: grid;
