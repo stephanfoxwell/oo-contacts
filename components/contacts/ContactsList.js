@@ -36,7 +36,10 @@ const ContactsList = ({ theRecords, setPageMeta, inspectedContact, setInspectedC
       // smoothly scroll consactListRef to top
       contactListRef.current.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [filters, theRecords])
+  }, [filters, theRecords]);
+
+
+
   return (
     <StyledContactsList ref={contactListRef}>
       {theRecords?.map(contact => (
@@ -101,7 +104,7 @@ const StyledContactsList = styled.ol`
 
 const ContactsListItem = ({ contact, currentUser }) => {
 
-  const { filters, inspectedContact, setInspectedContact, tags, inspectedContacts, toggleInspectedContacts } = useContactsWorkspace();
+  const { filters, inspectedContact, setInspectedContact, tags, inspectedContacts, toggleInspectedContacts, inspectedContactId, setInspectedContactId } = useContactsWorkspace();
 
 
   const doesContactHaveIsRestrictedTag = (contact) => {
@@ -139,13 +142,14 @@ const ContactsListItem = ({ contact, currentUser }) => {
 
   function handleContactClick() {
     if ( ! isContactRestricted ) {
-      toggleInspectedContacts(contact);
-      if ( contact.id === inspectedContact?.id ) {
-        setInspectedContact(false)
+      toggleInspectedContacts(contact.id);
+      setInspectedContactId(contact.id);
+      /*if ( contact.id === inspectedContact?.id ) {
+        setInspectedContact(false);
       }
       else {
-        setInspectedContact(contact)
-      }
+        setInspectedContact(contact);
+      }*/
     }
   }
 

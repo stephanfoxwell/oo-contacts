@@ -56,11 +56,26 @@ async function fetchUser(userId) {
 }
 */
 
+
+const fetchData = async (newContactId) => {
+  console.log("attempt to fetch new contact", newContactId);
+  try {
+    const response = await fetchContacts({ id: newContactId });
+    console.log("inspectedContact",response.data);
+    //setInspectedContact(response.data);
+    console.log("did update inspected contact on mutate")
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    //setLoading(false); // Ensure loading is set to false in case of an error
+  }
+};
+
 function ContactsEditor({ setMode }) {
 
   const {
     inspectedContact,
     setInspectedContact,
+    setInspectedContactId,
     organizations
   } = useContactsWorkspace()
 
@@ -99,7 +114,21 @@ function ContactsEditor({ setMode }) {
     onSuccess: (response) => {
       setSavingState("Saved");
       setTimeout(() => setSavingState("Save"), 2000);
-      queryClient.invalidateQueries(['contacts', 'tags', 'organizations']);
+      queryClient.invalidateQueries(['contacts', 'tags', 'organizations', 'inspected_contact']);
+      console.log("mutate success", response);
+      const newContact = response.data;
+      console.log("newContact id", newContact.id);
+      setInspectedContactId(newContact.id);
+  
+      fetchData(newContact.id);
+      // TODO: FIX VIEW MODE UPDATE
+      //setInspectedContact(newContact);
+      //setContact(newContact);
+      if ( ! contact?.id ) {
+        /*console.log(data);
+        setContact(response);
+        setInspectedContactId(response.id);*/
+      }
       //updateContact({ id: response.id})
     },
   });

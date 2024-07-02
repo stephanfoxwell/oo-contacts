@@ -16,13 +16,18 @@ import { PencilIcon, PlusCircleIcon, XIcon, PlusIcon, LinkExternalIcon, CopyIcon
 import ReactMarkdown from 'react-markdown';
 import Tag from "../ui/Tag";
 import CopyToClipboard from "../ui/CopyToClipboard";
+import { use } from "passport";
 
 
 const ContactDetails = ({ setMode }) => {
 
   const { inspectedContact } = useContactsWorkspace();
 
-  const contact = inspectedContact;
+  const [contact, setContact] = useState(inspectedContact);
+
+  useEffect(() => {
+    setContact(inspectedContact)
+  }, [inspectedContact])
   
   const workDetails = [];
   if ( contact?.position ) workDetails.push(contact.position);

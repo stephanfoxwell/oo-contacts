@@ -50,6 +50,10 @@ function useContactsWorkspace() {
     updateContactsWorkspace({ inspectedContact: contact });
   }
 
+  const setInspectedContactId = ( contact_id ) => {
+    updateContactsWorkspace({ inspectedContactId: contact_id });
+  }
+
   const setCurrentRecords = ( records ) => {
     updateContactsWorkspace({ currentRecords: records });
   }
@@ -62,15 +66,18 @@ function useContactsWorkspace() {
     return contact?.tags?.some( tag => contactsWorkspace?.tags?.find( t => t.id === tag ).is_restricted );
   }
 
-  const toggleInspectedContacts = ( contact ) => {
+  const toggleInspectedContacts = ( contact_id ) => {
     const updatedInspectedContacts = contactsWorkspace.inspectedContacts || [];
-    const index = updatedInspectedContacts.findIndex( c => c.id === contact.id );
-    if ( index > -1 ) {
-      updatedInspectedContacts.splice(index, 1);
+    
+    if ( updatedInspectedContacts.includes(contact_id) ) {
+      updatedInspectedContacts.splice(updatedInspectedContacts.indexOf(contact_id), 1);
     }
     else {
-      updatedInspectedContacts.push(contact);
+      updatedInspectedContacts.push(contact_id);
     }
+
+    console.log("updatedInspectedContacts", updatedInspectedContacts);
+
     updateContactsWorkspace({ inspectedContacts: updatedInspectedContacts });
   }
 
@@ -217,7 +224,9 @@ function useContactsWorkspace() {
     setSelectedRecords,
     contactsWorkspace,
     fields,
-    isContactRestricted
+    isContactRestricted,
+    inspectedContactId: contactsWorkspace?.inspectedContactId || undefined,
+    setInspectedContactId
   }
 }
 

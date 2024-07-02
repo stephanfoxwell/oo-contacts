@@ -271,7 +271,7 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
     }
   }
 
-  console.log(formattedFilters)
+  //console.log(formattedFilters)
 
   const urlFilters = `filter={ "_and": [ ${formattedFilters.map( filter => filter).join(',')} ] }`;
 
@@ -292,10 +292,10 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
 
 
   if ( filters.id ) {
-    url = `${baseUrl}${filters.id}`;
+    url = `${baseUrl}/${filters.id}?${urlFields}`;
   }
 
-  console.log(url)
+  //console.log(url)
 
   const data = await fetch(url, {
     method: 'GET',
@@ -305,8 +305,10 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
     credentials: 'include'
   }).then(res => res.json());
 
-  data.meta.page = requestedPage;
-  data.meta.limit = requestedLimit;
+  if ( ! filters.id ) {
+    data.meta.page = requestedPage;
+    data.meta.limit = requestedLimit;
+  }
 
   return data;
 

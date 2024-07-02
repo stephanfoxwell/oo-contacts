@@ -10,6 +10,7 @@ import Button from "../Button/Button";
 import ButtonDanger from "../Button/ButtonDanger";
 import ButtonPrimary from "../Button/ButtonPrimary";
 import ButtonText from "../Button/ButtonText";
+import { useQuery } from '@tanstack/react-query';
 
 import { PlusCircleIcon, XIcon, PlusIcon, LinkExternalIcon, CopyIcon, PencilIcon, EyeIcon } from '@primer/octicons-react';
 
@@ -18,6 +19,8 @@ import Tag from "../ui/Tag";
 
 import ContactDetails from "./ContactDetails";
 import ContactsEditor from "./ContactsEditor";
+
+import fetchContacts from "../../utils/fetchContactsAlt";
 
 
 function ContactsInspector() {
@@ -29,7 +32,9 @@ function ContactsInspector() {
     setPageStatus,
     tags,
     inspectedContacts,
-    toggleInspectedContacts
+    toggleInspectedContacts,
+    inspectedContactId,
+    setInspectedContactId,
   } = useContactsWorkspace();
 
   useEffect(() => {
@@ -40,7 +45,42 @@ function ContactsInspector() {
   
   const [selectedInspectedContact, setSelectedInspectedContact] = useState();
 
-  const currentInspectedContactIndex = inspectedContacts.findIndex((contact) => contact.id === inspectedContact.id);
+  const currentInspectedContactIndex = inspectedContacts.findIndex((contact) => contact.id === inspectedContactId);
+
+  const inspectedContactFilters = { id: inspectedContactId };
+
+  const { isSuccess, isLoading, isError, data, error } = useQuery({
+    queryKey: ['inspected_contact', { inspectedContactFilters }],
+    queryFn: () => fetchContacts(inspectedContactFilters),
+    keepPreviousData: true,
+  });
+
+  useEffect(() => {
+    console.log("is success")
+    if (isSuccess) {
+      setInspectedContact(data.data);
+    }
+  }, [data]);
+  /*
+  useEffect(() => {
+    console.log('inspectedContactId:', inspectedContactId)
+    const fetchData = async () => {
+      try {
+        const response = await fetchContacts({ id: inspectedContactId });
+        console.log("inspectedContact",response.data);
+        setInspectedContact(response.data);
+        console.log("did update inspected contact")
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false); // Ensure loading is set to false in case of an error
+      }
+    };
+
+    fetchData();
+
+      //setInspectedContact(data);
+  }, [inspectedContactId]);
+  */
   
   return (
     <StyledContactInspector>
