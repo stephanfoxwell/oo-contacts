@@ -26,7 +26,7 @@ async function fetchTags() {
 
   const urlFields = fields.map( field => `fields[]=${field}`).join('&');
 
-  const url = `${baseUrl}?sort=name&limit=-1&${urlFields}`;
+  const url = `${baseUrl}?filter={"status":{"_eq":"published"}}&sort=name&limit=-1&${urlFields}`;
   
   const data = await fetch(url, {
     method: 'GET',

@@ -56,6 +56,36 @@ handler.get(async (req, res) => {
   res.json(data);
 });
 
+handler.post(async (req, res) => {
+
+  const token = await verifyAndRetrieveToken(req, res);
+
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const payload = {
+    ...req.body,
+  };
+
+  const url = `${baseUrl}/`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(payload),
+  }).then(res => res.json());
+
+  
+
+  res.send(response);
+
+  return;
+});
 
 handler.patch(async (req, res) => {
 
@@ -66,7 +96,7 @@ handler.patch(async (req, res) => {
   }
 
   if ( ! req.body.id) {
-    return res.status(400).send('No contact id');
+    return res.status(400).send('No tag id');
   }
 
   const payload = {
@@ -85,13 +115,45 @@ handler.patch(async (req, res) => {
     body: JSON.stringify(payload),
   }).then(res => res.json());
 
-  
-
   res.send(response);
 
   return;
 });
 
+handler.delete(async (req, res) => {
+
+  const token = await verifyAndRetrieveToken(req, res);
+
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  if ( ! req.query.id) {
+    return res.status(400).send('No tag id');
+  }
+
+  const payload = {
+    status: 'archived',
+  };
+
+  console.log('delete payload', payload)
+
+  const url = `${baseUrl}/${req.query.id}`;
+
+  const response = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(payload),
+  }).then(res => res.json());
+
+  res.send(response);
+
+  return;
+});
 
 export default handler;
 

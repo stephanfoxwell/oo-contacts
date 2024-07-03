@@ -116,7 +116,7 @@ const StyledContactsFilterBar = styled.div`
     grid-template: 1fr / 1fr;
     align-items: center;
     &::before {
-      content: "No selected tags...";
+      content: "Selected tags will appear here...";
       font-size: 0.875em;
       font-style: italic;
       font-weight: 500;

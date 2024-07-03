@@ -121,7 +121,7 @@ function ContactsInspector() {
                     <ContactDetails setMode={setMode} />
                   ) : (
                     <div className="empty">
-                      <span>Select a contact to view...</span>
+                      <span>Selected contacts will appear here...</span>
                     </div>
                   )}
                 </>

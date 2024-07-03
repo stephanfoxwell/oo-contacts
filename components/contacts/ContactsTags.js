@@ -4,7 +4,7 @@ import { useContactsWorkspace } from './ContactsWorkspaceContext'
 import FieldLabel from '../ui/FieldLabel'
 import TextField from '../ui/TextField'
 import Dialog from '../ui/Dialog'
-import Button, { ButtonText, ButtonPrimary } from '../Button/index'
+import Button, { ButtonText, ButtonPrimary, ButtonDanger } from '../Button/index'
 import {EyeIcon, EyeClosedIcon, InfoIcon, TagIcon, SyncIcon, LockIcon, XCircleIcon} from '@primer/octicons-react'
 import randomColor from 'randomcolor';
 
@@ -89,8 +89,8 @@ function ContactsTags() {
             onChange={(e) => setFilters({ includeTagsOperator: e.target.value })}
           />
         </div>
-        {/*<div className="admin">
-          <Button variant="small">Create</Button>
+        <div className="admin">
+          <Button variant="small" onClick={() => setTagFormIsOpen(true)}>Create</Button>
 
           <Dialog isOpen={tagFormIsOpen} setIsOpen={setTagFormIsOpen}>
             <TagForm setIsOpen={setTagFormIsOpen} />
@@ -100,7 +100,7 @@ function ContactsTags() {
           ) : (
             <Button variant="small" onClick={() => setIsEditMode( ! isEditMode )}>Edit</Button>
           )}
-        </div>*/}
+        </div>
       </StyledContactTagsFooter>
     </StyledContactTags>
   );
@@ -200,8 +200,8 @@ const StyledContactTagsFooter = styled.div`
     align-items: center;
     justify-content: space-between;
     border-top: var(--border-divider);
-    padding-top: 0.5em;
-    margin-top: 0.5em;
+    padding-top: 0.625em;
+    margin-top: 0.625em;
   }
 `
 
@@ -453,6 +453,20 @@ export async function postTag( data ) {
   return response.json()
 }
 
+export async function deleteTag( data ) {
+
+  const response = await fetch(`/api/tags?id=${data.id}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+
+  if ( ! response.ok )
+    throw new Error("Network response was not ok")
+    
+  return response.json()
+}
+
 function TagForm( props ) {
 
   const [tag, setTag] = useState(props.tag || {})
@@ -485,7 +499,24 @@ function TagForm( props ) {
       setSavingState('Saved');
       props.setIsOpen(false)
     },
-  })
+  });
+
+  const [deletingState, setDeletingState] = useState('Delete')
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteTag,
+    onMutate: () => {
+      setDeletingState('Deleting')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['contacts', 'tags', 'organizations']);
+      setDeletingState('Deleted');
+      props.setIsOpen(false);
+    },
+  });
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
 
   return (
     <StyledFormset>
@@ -532,9 +563,19 @@ function TagForm( props ) {
           <StyledColorOption onClick={(e) => setColors(generateColors())}><SyncIcon /></StyledColorOption>
         </StyledColorOptions>
       </div>
-      <div>
-        <Button onClick={() => mutation.mutate(tag)}>{savingState}</Button>
+      <div className="actions">
+        <ButtonPrimary onClick={() => mutation.mutate(tag)}>{savingState}</ButtonPrimary>
+        {tag.id && (
+          <ButtonText onClick={() => setShowDeleteDialog(true)}>Delete</ButtonText>
+        )}
       </div>
+      <Dialog isOpen={showDeleteDialog} setIsOpen={setShowDeleteDialog}>
+        <p>Are you sure you want to delete this tag? <strong>This cannot be undone.</strong></p>
+        <div className="actions">
+          <ButtonDanger onClick={() => deleteMutation.mutate(tag)}>{deletingState}</ButtonDanger>
+          <ButtonText onClick={() => setShowDeleteDialog(false)}>Cancel</ButtonText>
+        </div>
+      </Dialog>
     </StyledFormset>
   )
 }
@@ -543,6 +584,10 @@ const StyledFormset = styled.div`
   display: grid;
   grid-template: auto / 1fr;
   grid-gap: 1em;
+  .actions {
+    display: flex;
+    justify-content: space-between;
+  }
 `
 const StyledColorField = styled.div`
   position: relative;
