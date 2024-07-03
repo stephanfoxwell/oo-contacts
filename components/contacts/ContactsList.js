@@ -127,11 +127,13 @@ const ContactsListItem = ({ contact, currentUser }) => {
         isRestricted = true;
       }
       else {
-        tag?.users?.forEach( user => {
-          if ( user.directus_users_id === currentUser.id ) {
-            isRestricted = false;
-          } 
-        });
+        const user = tag?.users?.find( user => user.directus_users_id === currentUser.id );
+        if ( user ) {
+          isRestricted = false;
+        }
+        else {
+          isRestricted = true;
+        }
       }
     });
 

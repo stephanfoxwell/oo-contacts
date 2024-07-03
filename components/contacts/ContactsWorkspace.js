@@ -15,6 +15,8 @@ import Contacts from './Contacts';
 import fetchContacts from '../../utils/fetchContactsAlt';
 import ContactsActiveFilters from './ContactsActiveFilters';
 
+import fetchTags from '../../utils/fetchTagsAlt';
+
 function ContactsWorkspace() {
 
   return (
@@ -50,7 +52,24 @@ function ContactsWorkspaceContent() {
       //console.log('organizations', data.data);
       setOrganizations(data.data)
     }
-  }, [data])
+  }, [data]);
+
+
+  const {
+    data: tagsData,
+    error: tagsError,
+    isLoading: tagsIsLoading,
+    isSuccess: tagsIsSuccess,
+  } = useQuery({
+    queryKey: ['tags'], 
+    queryFn: fetchTags
+  });
+
+  useEffect(() => {
+    if ( tagsIsSuccess ) {
+      setTags(tagsData.data)
+    }
+  }, [tagsData]);
 
   return (
     <StyledWorkspace className={inspectedContact ? 'has-inspector' : undefined}>

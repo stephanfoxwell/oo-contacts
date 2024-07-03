@@ -4,11 +4,11 @@ import styled, {css} from 'styled-components'
 function TextField( props ) {
 
   const defaultProps = {
-    hasBorder: true,
+    /*hasBorder: true,
     hasBorderRadiusTopLeft: true,
     hasBorderRadiusTopRight: true,
     hasBorderRadiusBottomLeft: true,
-    hasBorderRadiusBottomRight: true,
+    hasBorderRadiusBottomRight: true,*/
     theme: 'default',
     type: 'text',
   };
@@ -17,11 +17,12 @@ function TextField( props ) {
   
   function getClassName() {
     const classNames = [];
-    if ( props?.hasBorder ) {
-      classNames.push('has-border')
-    }
     if ( props?.theme === 'solid' ) {
       classNames.push('is-solid')
+    }
+    /*
+    if ( props?.hasBorder ) {
+      classNames.push('has-border')
     }
     if ( props?.hasBorderRadiusTopLeft ) {
       classNames.push('has-border-radius-top-left')
@@ -34,7 +35,7 @@ function TextField( props ) {
     }
     if ( props?.hasBorderRadiusBottomRight ) {
       classNames.push('has-border-radius-bottom-right')
-    }
+    }*/
 
     return classNames.join(' ');
   }
@@ -58,7 +59,10 @@ const StyledTextField = styled.input`
   border: 0;
   border-radius: 0;
   background-color: var(--color-white);
-  &.has-border-radius-top-left {
+  border-radius: calc(4 * var(--border-radius));
+  border: var(--border);
+  border: var(--border-width) solid rgba(0,0,0,0.09375);
+  /*&.has-border-radius-top-left {
     border-top-left-radius: calc(4 * var(--border-radius));
   }
   &.has-border-radius-top-right {
@@ -69,11 +73,7 @@ const StyledTextField = styled.input`
   }
   &.has-border-radius-bottom-right {
     border-bottom-right-radius: calc(4 * var(--border-radius));
-  }
-  &.has-border {
-    border: var(--border);
-    border: var(--border-width) solid rgba(0,0,0,0.09375);
-  }
+  }*/
   &.is-solid {
     background-color: var(--color-off-white);
     border: 0;

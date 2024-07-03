@@ -133,9 +133,6 @@ const ContactsSearch = () => {
           autoCorrect="off" 
           autoCapitalize="off"
           spellCheck="false"
-          hasBorder={false}
-          hasBorderRadiusTopLeft={false}
-          hasBorderRadiusBottomLeft={false}
         />
         <button type="submit"><PlusCircleIcon /></button>
       </StyledContactsSearch>
@@ -187,6 +184,11 @@ const StyledContactsSearch = styled.form`
     place-items: center;
     height: 100%;
     border-right: var(--border);
+  }
+  input {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border: 0;
   }
   > button {
     position: absolute;

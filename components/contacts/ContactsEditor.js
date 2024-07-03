@@ -235,33 +235,28 @@ function ContactsEditor({ setMode }) {
                 field={{name: 'tags', type: 'string', multiple: true}}
                 currentValues={contact?.tags || []}
                 updateContact={updateContact}
-                inlineTags
               />
             </div>
 
             {[1,2,3,4,5].map((i) => (
-              <>
-                <div className="full">
-                  <FieldLabel htmlFor={`form-email_${i}`}>Email {i}</FieldLabel>
-                  <EmailField
-                    field={{name: `email_${i}`, type: 'email'}}
-                    updateContact={updateContact}
-                    contact={contact}
-                  />
-                </div>
-              </>
+              <div className="full" key={`editor-email-${i}`}>
+                <FieldLabel htmlFor={`form-email_${i}`}>Email {i}</FieldLabel>
+                <EmailField
+                  field={{name: `email_${i}`, type: 'email'}}
+                  updateContact={updateContact}
+                  contact={contact}
+                />
+              </div>
             ))}
             {[1,2,3,4,5].map((i) => (
-              <>
-                <div className="full">
-                  <FieldLabel htmlFor={`form-phone_${i}`}>Phone {i}</FieldLabel>
-                  <EmailField
-                    field={{name: `phone_${i}`, type: 'tel'}}
-                    updateContact={updateContact}
-                    contact={contact}
-                  />
-                </div>
-              </>
+              <div className="full" key={`editor-phone-${i}`}>
+                <FieldLabel htmlFor={`form-phone_${i}`}>Phone {i}</FieldLabel>
+                <EmailField
+                  field={{name: `phone_${i}`, type: 'tel'}}
+                  updateContact={updateContact}
+                  contact={contact}
+                />
+              </div>
             ))}
             {contact?.type === 'individual' && (
               <>
@@ -276,7 +271,7 @@ function ContactsEditor({ setMode }) {
                     >
                       <option value="">Select an organization</option>
                       {organizations?.map((org) => (
-                        <option key={org.id} value={org.id} selecte={contact?.organization?.id || undefined}>{org.name}</option>
+                        <option key={`editor-org-${org.id}`} value={org.id} selecte={contact?.organization?.id || undefined}>{org.name}</option>
                       ))}
                     </select>
                   </div>
@@ -315,7 +310,7 @@ function ContactsEditor({ setMode }) {
             </div>
 
             {['Bluesky', 'Facebook', 'Instagram', 'LinkedIn', 'Mastodon', 'Substack', 'Threads', 'X', 'YouTube' ].map((social) => (
-              <div className="full">
+              <div className="full" key={`editor-social-${social.toLowerCase()}`}>
                 <FieldLabel htmlFor={`form-${social.toLowerCase()}`}>{social}</FieldLabel>
                 <TextField
                   id={`form-${social.toLowerCase()}`}
@@ -618,7 +613,7 @@ const StyledFieldWithLabel = styled.div`
   gap: 0.5em;
 `;
 
-function ArrayField({ field, currentValues, updateContact, inlineTags }) {
+function ArrayField({ field, currentValues, updateContact }) {
   const [value, setValue] = useState(``);
 
   const { tags } = useContactsWorkspace();
@@ -659,9 +654,7 @@ function ArrayField({ field, currentValues, updateContact, inlineTags }) {
   }, [value])
 
   return (
-    <StyledArrayField
-      inlineTags={inlineTags ? true : undefined}
-    >
+    <StyledArrayField>
       <div className="controls">
         <div className="select">
           <select name="tags-select" onKeyDown={(e) => handleKeyDown(e)} onChange={(e) => setValue(e.target.value)}>
