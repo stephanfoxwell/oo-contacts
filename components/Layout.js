@@ -205,7 +205,7 @@ const Layout = ({ children }) => {
         `}
       </style>
       <Head>
-        <title>OO Contacts</title>
+        <title>OO Contacts Database</title>
         <meta key="viewport" name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
       </Head>
       <StyledApp>

@@ -39,6 +39,8 @@ const ContactDetails = ({ setMode }) => {
   const hasActivePhone = [1,2,3,4,5].some((i) => contact[`phone_${i}_number`]);
   const hasActiveSocials = [`Bluesky`, `Instagram`, `Facebook`, `LinkedIn`, `Mastodon`, `Substack`, `Threads`, `YouTube`, `X`].some((social) => contact[`social_${social.toLowerCase()}`]);
 
+  const theName = (contact.type === "individual" ? `${contact.first_name || ''} ${contact.last_name || ''}` : contact.name).trim();
+
   return (
     <StyledContactDetails>
       {/*
@@ -49,7 +51,7 @@ const ContactDetails = ({ setMode }) => {
       <header>
         {contact.type === "individual" ? (
           <>
-            <h1><CopyToClipboard>{`${contact.first_name} ${contact.last_name}`}</CopyToClipboard></h1>
+            <h1><CopyToClipboard>{`${theName}`}</CopyToClipboard></h1>
             <h2>{workDetails.map((detail) => {
               return (
                 <React.Fragment key={detail}>
