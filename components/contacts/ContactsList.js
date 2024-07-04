@@ -2,15 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useContactsWorkspace } from "./ContactsWorkspaceContext";
 
 
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-
 import styled from "styled-components";
 import Tag from "../ui/Tag";
-import { LockIcon, EyeIcon, ArrowUpIcon, ArrowDownIcon } from "@primer/octicons-react";
-
-import Button, { ButtonText } from "../Button/index";
-import RadioInput from "../ui/RadioInput";
-import Dropdown from "../ui/Dropdown";
 
 
 const ContactsList = ({ theRecords, setPageMeta, inspectedContact, setInspectedContact }) => {

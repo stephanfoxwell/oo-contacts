@@ -28,6 +28,7 @@ const Login = () => {
     if (res.status === 200) {
       router.push('/contacts');
     } else {
+      // TODO: account for suspended account or other errors
       setError('Incorrect username or password. Please try again.');
     }
   }
@@ -57,7 +58,7 @@ const Login = () => {
           />
           <ButtonPrimary type="submit">Sign in</ButtonPrimary>
           {error && <p>{error}</p>}
-          <ButtonText as={Link} href="/forget-password">Forgot password</ButtonText>
+          {/*<ButtonText as={Link} href="/forget-password">Forgot password</ButtonText>*/}
         </form>
       </StyledLogin>
     </StyledLoginWrap>

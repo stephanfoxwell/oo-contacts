@@ -45,6 +45,7 @@ function ContactsTags() {
 
   const [tagFormIsOpen, setTagFormIsOpen] = useState(false);
 
+
   return (
     <StyledContactTags>
       <StyledContactTagsHeader>
@@ -232,7 +233,6 @@ function TagListItem({ tag, isEditMode, hideActiveBackground }) {
   }
 
   useEffect(() => {
-    console.log("useEffect isActive", isActive);
     if ( typeof isActive !== 'undefined' ) {
       toggleActiveTag( tag.id, isActive )
       //setPageIndex(1)
@@ -240,7 +240,6 @@ function TagListItem({ tag, isEditMode, hideActiveBackground }) {
   }, [isActive])
   
   useEffect(() => {
-    console.log("useEffect filters", filters);
     if ( filters?.includeTags?.includes(tag.id) || filters?.excludeTags?.includes(tag.id) ) {
       //console.log('set to active')
       setIsActive(true)
@@ -316,15 +315,6 @@ function TagListItem({ tag, isEditMode, hideActiveBackground }) {
         <strong onClick={() => setIsOpen(true)}>{tag.name}</strong>
       ) : (
         <>
-          {/*isActive && (
-            <button type="button" onClick={() => setIsExclude( ! isExclude )}>
-              {isExclude ? (
-                <EyeClosedIcon />
-              ) : (
-                <EyeIcon />
-              )}
-            </button>
-          )*/}
           <div>
             <strong onClick={(e) => setIsActive( ! isActive )}>
               

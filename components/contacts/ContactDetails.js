@@ -39,7 +39,7 @@ const ContactDetails = ({ setMode }) => {
   const hasActivePhone = [1,2,3,4,5].some((i) => contact[`phone_${i}_number`]);
   const hasActiveSocials = [`Bluesky`, `Instagram`, `Facebook`, `LinkedIn`, `Mastodon`, `Substack`, `Threads`, `YouTube`, `X`].some((social) => contact[`social_${social.toLowerCase()}`]);
 
-  const theName = (contact.type === "individual" ? `${contact.first_name || ''} ${contact.last_name || ''}` : contact.name).trim();
+  const theName = (contact.type === "individual" ? `${contact.first_name || ''} ${contact.last_name || ''}` : contact.name);
 
   return (
     <StyledContactDetails>
@@ -64,7 +64,7 @@ const ContactDetails = ({ setMode }) => {
             })}</h2>
           </>
         ) : (
-          <h1>{contact.name}</h1>
+          <h1><CopyToClipboard>{contact.name}</CopyToClipboard></h1>
         )}
         <h3>{contact.location}</h3>
       </header>

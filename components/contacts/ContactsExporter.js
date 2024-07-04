@@ -25,8 +25,12 @@ const ContactsExporter = () => {
 
   const activeTags = tags?.filter(tag => tagIsActive(tag)) || [];
 
+  const potentialKeywordFilters = ['company', 'email', 'first_name', 'last_name', 'location', 'name', 'notes', 'phone', 'position'];
+
+  const potentialKeywordFilterIsActive =  potentialKeywordFilters.some((filter) => filters[filter] !== undefined && Array.isArray(filters[filter]) && filters[filter].length > 0 && filters[filter][0] !== '');
+
   useEffect(() => {
-    if ( activeTags.length > 0 ) {
+    if ( activeTags.length > 0 || potentialKeywordFilterIsActive ) {
       setHasActiveFilters(true);
     }
     else {
@@ -37,9 +41,9 @@ const ContactsExporter = () => {
 
   return (
     <div>
-    {hasActiveFilters && (
+    {1 === 1 && (
       <>
-        <Button  type="button" onClick={() => setIsOpen(true)}> <span>Export</span><DownloadIcon /></Button>
+        <ButtonPrimary disabled={! hasActiveFilters ? 'disabled' : undefined}  type="button" onClick={() => setIsOpen(true)}> <span>Export</span><DownloadIcon /></ButtonPrimary>
 
         <Dialog isOpen={isOpen} setIsOpen={setIsOpen}>
           <Dialog.Header>Export contacts</Dialog.Header>

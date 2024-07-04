@@ -281,32 +281,31 @@ function ContactsListMeta({ pageMeta, inspectedContact, setInspectedContact }) {
       <div>
         <ContactsPagination pageMeta={pageMeta} />
       </div>
-      <ContactsExporter />
+      <div>
+        <ContactsExporter />
+      </div>
     </StyledContactsListMeta>
   )
 }
 
 const StyledContactsListMeta = styled.div`
-  display: flex;
+  display: grid;
   align-items: center;
-  justify-content: space-between;
+  grid-template: 1fr / 6em 1fr 6em;
   height: var(--height-titlebar);
   margin-right: 1.5em;
   &:last-of-type {
     border-top: var(--border-divider);
   }
   > div {
-    display: flex;
-    align-items: center;
-    > * {
-      margin-right: 0.5em;
-      margin-left: 0.5em;
+    &:nth-of-type(2) {
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    > *:first-child {
-      margin-left: 0;
-    }
-    > *:last-child {
-      margin-right: 0;
+    &:last-of-type {
+      display: flex;
+      justify-content: flex-end;
     }
   }
   hr {

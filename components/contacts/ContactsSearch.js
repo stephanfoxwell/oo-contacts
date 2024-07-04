@@ -68,6 +68,9 @@ const ContactsSearch = () => {
   function handleAddFilter(e) {
     e.preventDefault();
 
+    if ( ! newFilterValue ) return;
+
+
     const updatedFilterValue = filters[filterKey] || [];
 
     if ( updatedFilterValue.includes(newFilterValue) ) {
@@ -126,7 +129,7 @@ const ContactsSearch = () => {
           </Dropdown>
         </div>
         <TextField 
-          placeholder="Filter..."
+          placeholder="Keyword filter..."
           value={newFilterValue}
           onChange={(e) => setNewFilterValue(e.target.value)}
           autoComplete="off" 
