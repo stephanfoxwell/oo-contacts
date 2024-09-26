@@ -34,10 +34,6 @@ const Login = () => {
   }
 
   return (
-    <>Maintenance in progress...</>
-  )
-
-  return (
     <StyledLoginWrap>
       <StyledLogin>
         <form onSubmit={handleSubmit}>

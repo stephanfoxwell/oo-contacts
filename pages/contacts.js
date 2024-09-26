@@ -24,10 +24,7 @@ const ContactsPage = ({ data }) => {
       router.push('/login');
     }
   }, [data]);
-
-  return (
-    <>Maintenance in progress...</>
-  )
+  
   
   return (
     <ContactsWorkspace />

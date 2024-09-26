@@ -69,6 +69,8 @@ async function fetchContacts( filters, pageIndex = 1, limit = 100 ) {
 
   const keywordFilters = [];
 
+  formattedFilters.push(`{"status":{ "_eq":"published"}}`)
+
   if ( filters.first_name ) {
     const firstNamesFilters = [];
     if (  Array.isArray(filters.first_name) ) {

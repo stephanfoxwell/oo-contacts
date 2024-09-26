@@ -130,8 +130,8 @@ const ContactsSearch = () => {
         </div>
         <TextField 
           placeholder="Keyword filter..."
-          value={newFilterValue}
-          onChange={(e) => setNewFilterValue(e.target.value)}
+          value={newFilterValue.trim()}
+          onChange={(e) => setNewFilterValue(e.target.value.trim())}
           autoComplete="off" 
           autoCorrect="off" 
           autoCapitalize="off"
