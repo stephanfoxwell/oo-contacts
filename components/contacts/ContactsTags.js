@@ -312,7 +312,10 @@ function TagListItem({ tag, isEditMode, hideActiveBackground }) {
       hideActiveBackground={hideActiveBackground || undefined}
     >
       {isEditMode ? (
-        <strong onClick={() => setIsOpen(true)}>{tag.name}</strong>
+        <div>
+          <strong onClick={() => setIsOpen(true)}>{tag.name}</strong>
+          <span className="tag-count">{tag.contacts_count}</span>
+        </div>
       ) : (
         <>
           <div>
